@@ -1,0 +1,162 @@
+ body {
+    background: url(../images/gradient.jpg) repeat-x top;
+    margin: 0; padding: 0;
+    font-family: arial;
+}
+a {
+    color: #CE0A0A;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; color: #990000; }
+
+#page {
+    width: 768px;
+    padding: 30px;
+    margin: 0 auto;
+    min-height: 600px;
+    background: url(../images/page.png) repeat-y center;
+}
+#footer {
+    width: 768px;
+    padding: 0 30px;
+    margin: -20px auto 0 auto;
+    height: 40px;
+    font-size: 10px;
+    background: url(../images/footer.jpg) no-repeat bottom center;
+}
+#header {
+    height: 115px;
+    margin: 0 0;
+    background: url(../images/header.jpg) no-repeat top right;
+}
+
+h1, h2, h3 { margin: 0; }
+
+#header h1 {
+    float: left;
+    width: 530px;
+    margin-bottom: 15px;
+    font-family: georgia;
+    font-size:35px;
+    font-weight: normal;
+    color: #ffff00;
+}
+#header h2 {
+    float: left;
+    font-family: georgia;
+    font-size: 35px;
+    font-weight: normal;
+    color: #ffff00;
+}
+#headercontent { width: 800px;  margin: 0 auto; padding-top: 8px; }
+
+#menu {
+    list-style: none;
+    clear: both;
+    width: 780px;
+    background: url(../images/menu.png) no-repeat;
+    height: 52px;
+    padding: 18px 25px;
+}
+#menu li {
+    float: left;
+    margin-right: 15px;
+    padding-right: 15px;
+    border-right: 1px solid #4d4d4d;
+}
+#menu li.noborder { border: none; }
+#menu li.right { float: right; }
+#menu li.current a { text-decoration: underline; color: #990000; }
+#menu li a {
+    font-family: arial;
+    font-size: 14px;
+}
+form dt {
+   clear:both;
+   width:33%;
+   float:left;
+   text-align:right;
+}
+
+form dd{
+   float:left;
+   width:66%;
+   margin:0 0 0.5em 0.25em;
+}
+
+
+/** documentation styles **/
+
+#documentation div.method_name{
+	font-weight: bold;
+}
+#documentation div.comment{
+	background: #ddd;
+	font-family: none;
+	font-style: italic;
+}
+#documentation {
+	border-top: 1px dotted #000000;
+	margin-top: 30px;
+}
+
+/** form **/
+
+label{
+float: left;
+width: 120px;
+font-weight: bold;
+}
+
+input, textarea{
+width: 180px;
+margin-bottom: 5px;
+}
+
+textarea{
+width: 400px;
+height: 150px;
+}
+
+.boxes{
+width: 1em;
+}
+
+#submitbutton{
+margin-left: 120px;
+margin-top: 5px;
+width: 90px;
+}
+
+form br{
+	clear: left;
+}
+form input.wide{
+	width: 400px;
+}
+/** unit testing **/
+
+.test_fail{
+    margin-top: 10px;
+    border: 1px solid #f00;
+    background-color: #fee;
+}
+
+.test_pass{
+    margin-top: 10px;
+    border: 1px solid #0f0;
+    background-color: #efe;
+}
+
+h3.test_title{
+    margin: 10px;
+    clear: left;
+}
+#short{
+    height: 200px;
+    overflow: hidden;
+}
+
+#long:hover{
+    cursor: pointer;
+}

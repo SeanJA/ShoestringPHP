@@ -1,0 +1,22 @@
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	#base folder that you files are in
+	RewriteBase /svn.shoestringphp.com/
+
+	#Removes access to the library folder by users.
+    #Additionally this will allow you to create a Library.php controller,
+    #previously this would not have been possible.
+    #'library' can be replaced if you have renamed your library folder.
+    RewriteCond %{REQUEST_URI} ^library.*
+    RewriteRule ^(.*)$ /index.php?/$1 [L]
+
+	RewriteCond %{REQUEST_URI} ^public.*
+    RewriteRule ^(.*)$ /index.php?/$1 [L]
+
+	#Checks to see if the user is attempting to access a valid file,
+    #such as an image or css document, if this isn't true it sends the
+    #request to index.php
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
