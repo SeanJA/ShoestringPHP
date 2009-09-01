@@ -631,7 +631,7 @@ class sMYSQLQuery extends sRoot {
 		$limit = $this->query->getLimit();
 		$sql = '';
 		if ($limit) {
-			$sql.= " LIMIT $limit \n";
+			$sql.= " LIMIT $limit\n";
 		}
 		return $sql;
 	}
@@ -640,7 +640,7 @@ class sMYSQLQuery extends sRoot {
 		$offset = $this->query->getOffset();
 		$sql = '';
 		if ($offset) {
-			$sql .= " OFFSET $offset \n";
+			$sql .= " OFFSET $offset\n";
 		}
 		return $sql;
 	}

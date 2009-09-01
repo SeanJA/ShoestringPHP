@@ -1,7 +1,7 @@
 <IfModule mod_rewrite.c>
 	RewriteEngine On
 	#base folder that you files are in
-	RewriteBase /svn.shoestringphp.com/
+	RewriteBase /shoestringphp/
 
 	#Removes access to the library folder by users.
     #Additionally this will allow you to create a Library.php controller,
