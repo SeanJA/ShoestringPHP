@@ -198,7 +198,11 @@ class sMYSQLQuery extends sRoot {
 	 * @param string $column
 	 */
 	public function addColumn($column) {
-		return $this->query->addColumn('`'.$this->escape($column).'`');
+		if(strpos($column, ' ') === false){
+			return $this->query->addColumn('`'.$this->escape($column).'`');
+		} else {
+			return $this->query->addColumn($this->escape($column));
+		}
 	}
 
 	/**
