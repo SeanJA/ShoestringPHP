@@ -123,9 +123,9 @@ class sUser extends sRoot{
 	}
 
 	/**
-	 * Get a property of a user. You should give here the name of the field that you seek from the user table
-	 * @param string $property
-	 * @return string
+	 * Retrieve a user value (using the names of the columns in your users table)
+	 * @param string $name
+	 * @return multiple
 	 */
 	public function  __get($name) {
 		if (empty($this->userId)) {
@@ -150,7 +150,7 @@ class sUser extends sRoot{
 
 	/**
 	 * Get the user fields from the database
-	 * @return <type>
+	 * @return array
 	 */
 	public function getUserFields() {
 		$q = new sQuery();
@@ -225,7 +225,6 @@ class sUser extends sRoot{
 	
 	/**
 	 * A function that is used to load one user's data
-	 * @access private
 	 * @param string $userId
 	 * @return bool
 	 */

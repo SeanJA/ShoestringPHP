@@ -2,7 +2,7 @@
 class Users_Controller extends sController {
 	private $user;
 	private $data;
-	function  __construct($model, $controller) {
+	function  __construct($controller) {
 		$this->user = new sUser();
 		$this->data = array();
 		$this->data['loggedIn'] = false;
@@ -12,6 +12,10 @@ class Users_Controller extends sController {
 		}
 		parent::__construct($model, $controller);
 	}
+    /**
+     * The default page, if you are logged in it will let you see it, otherwise it will
+     * throw you out to the login page
+     */
 	function index() {
 		if($this->data['loggedIn']) {
 			$this->template->render('index', $this->data);
@@ -19,7 +23,9 @@ class Users_Controller extends sController {
 			redirect('users/login');
 		}
 	}
-	
+	/**
+     * An example login page, it includes an example of how the validation is used
+     */
 	function login() {
 		if($_POST) {
 			$validation['username'] = 'minLen:1';
@@ -42,36 +48,20 @@ class Users_Controller extends sController {
 		}
 		$this->template->render('login', $this->data);
 	}
-
+    /**
+     * An example of a logout page
+     */
 	function logout() {
 		$this->user->logout();
 		$this->data['loggedIn'] = false;
 		$this->data['message'] = 'You are now logged out';
 		$this->template->render('login', $this->data);
 	}
-
-	function edit($id='') {
-		if(!$this->user->loggedIn()) {
-			redirect('users/login');
-		}
-		if($_POST) {
-
-		}
-		if(!$id) {
-			$this->data['editUser'] = $this->user->getUserData();
-		} else {
-			if($this->user->level == 'admin') {
-				$tempUser = new sUser($id);
-				$this->data['editUser'] = $tempUser->getUserData();
-			} else {
-				$this->data['editUser'] = $this->user->getUserData();
-			}
-		}
-		if($this->user->level == 'admin') {
-			$this->data['levels'] = $this->user->getUserLevels();
-		}
-		$this->template->render('edit', $this->data);
-	}
+    /**
+     * An example callback password check function
+     * @param string $password
+     * @return array
+     */
 	protected function passwordCheck($password) {
 		$return['valid'] = true;
 		$return['error'] = '';

@@ -3,14 +3,14 @@
 class Docs_Controller extends sController {
 	private $user;
 	private $data;
-	function  __construct($model, $controller) {
+	function  __construct($controller) {
 		$this->user = new sUser();
 		$this->data = array();
 		$this->data['loggedIn'] = false;
 		if($this->user->loggedIn()) {
 			$this->data['loggedIn'] = true;
 		}
-		parent::__construct($model, $controller);
+		parent::__construct($controller);
 		$this->loadModel('Doc');
 	}
 	function index() {

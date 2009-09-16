@@ -1,26 +1,24 @@
 <?php
 
 class sController extends sRoot{
-
-	protected $model;
+    /**
+     * 
+     * @var <type>
+     */
 	protected $controller;
 	protected $template;
 	private $validationErrors;
 	private $validation = array();
 	private $validationFields = array();
-	public function __construct($model, $controller) {
+	public function __construct($controller) {
 		parent::__construct();
-		$this->controller = $controller;
-		if(file_exists(ROOT . DS . 'application' . DS . 'models' . DS . strtolower($model). '.php')){
-			$this->$model = new $model;
-		}
 		$this->template = new sTemplate($controller);
 	}
 	/**
 	 * Load a different model than the one that is
 	 * included by default with the current controller
-	 * @param str $model
-	 * @param str $as
+	 * @param string $model
+	 * @param string $as
 	 */
 	public function loadModel($model, $as=''){
 		if(file_exists(ROOT . DS . 'application' . DS . 'models' . DS . strtolower($model). '.php')){
@@ -34,7 +32,7 @@ class sController extends sRoot{
 	}
 	/**
 	 * Load a helper
-	 * @param 'str' $helper
+	 * @param string $helper
 	 */
 	public function loadHelper($helper){
 		if(file_exists(ROOT . DS . 'application' . DS . 'helpers' . DS . strtolower($helper) .$this->config->helper_prefix. '.php')){
@@ -45,40 +43,17 @@ class sController extends sRoot{
 			$this->error('Helper does not exist: '.$helper);
 		}
 	}
-
-	public function post($var){
-		if(isset($_POST[$var])){
-			return $_POST[$var];
-		}
-		return null;
-	}
-	public function get($var){
-		if(isset($_GET[$var])){
-			return $_GET[$var];
-		}
-		return null;
-	}
-	public function request($var){
-		if(isset($_REQUEST[$var])){
-			return $_REQUEST[$var];
-		}
-		return null;
-	}
-	public function session($var){
-		if(isset($_SESSION[$var])){
-			return $_SESSION[$var];
-		}
-		return null;
-	}
-	public function cookie($var){
-		if(isset($_COOKIE[$var])){
-			return $_COOKIE[$var];
-		}
-		return null;
-	}
+    /**
+     * Set how things will be validated
+     * @param array $array['variable']=>'validation';
+     */
 	protected function setValidation($array){
 		$this->validation = $array;
 	}
+    /**
+     * Set the human readable variables (to be displayed in the view)
+     * @param array $array['variable']=>'Human Readable Variable'
+     */
 	protected function setValidationFields($array){
 		$this->validationFields = $array;
 	}

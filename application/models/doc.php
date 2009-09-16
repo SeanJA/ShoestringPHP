@@ -1,5 +1,13 @@
 <?php
 class Doc extends sModel {
+    /**
+     * Add a new piece of documentation
+     * @param string $methodName
+     * @param string $comments
+     * @param string $example
+     * @param string $file
+     * @return boolean
+     */
 	function create($methodName, $comments, $example, $file){
 		$q = new sQuery();
 		$q->setInto('docs');
@@ -9,18 +17,32 @@ class Doc extends sModel {
 		$q->addField('file', $file);
 		return $q->insert();
 	}
+    /**
+     * Get the documentation for a specific file
+     * @param string $fileName
+     * @return array
+     */
 	function getDocs($fileName){
 		$q = new sQuery();
 		$q->from('docs');
 		$q->addWhere('file', $fileName);
 		return $q->selectAll();
 	}
+    /**
+     * Get a specific doc
+     * @param int $id
+     * @return array
+     */
 	function getDoc($id){
 		$q = new sQuery();
 		$q->from('docs');
 		$q->addWhere('id', $id);
 		return $q->selectRow();
 	}
+    /**
+     * Get all of the files that are documented
+     * @return array
+     */
 	function getFiles(){
 		$q = new sQuery();
 		$q->from('docs');
@@ -33,6 +55,15 @@ class Doc extends sModel {
 		}
 		return $return;
 	}
+    /**
+     * Update a specific doc
+     * @param int $id
+     * @param string $methodName
+     * @param string $comments
+     * @param string $example
+     * @param string $file
+     * @return boolean
+     */
 	function update($id, $methodName, $comments, $example, $file){
 		$q = new sQuery();
 		$q->setInto('docs');
@@ -45,6 +76,11 @@ class Doc extends sModel {
 			return $q->getError();
 		}
 	}
+    /**
+     * Delete a specific doc
+     * @param int $id
+     * @return boolean
+     */
 	function delete($id){
 		$q = new sQuery();
 		$q->setFrom('docs');

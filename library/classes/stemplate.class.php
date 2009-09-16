@@ -55,34 +55,4 @@ class sTemplate extends sRoot{
 	public function useFooter(){
 		$this->footer = true;
 	}
-	public function post($var){
-		if(isset($_POST[$var])){
-			return $_POST[$var];
-		}
-		return null;
-	}
-	public function get($var){
-		if(isset($_GET[$var])){
-			return $_GET[$var];
-		}
-		return null;
-	}
-	public function request($var){
-		if(isset($_REQUEST[$var])){
-			return $_REQUEST[$var];
-		}
-		return null;
-	}
-	public function session($var){
-		if(isset($_SESSION[$var])){
-			return $_SESSION[$var];
-		}
-		return null;
-	}
-	public function cookie($var){
-		if(isset($_COOKIE[$var])){
-			return $_COOKIE[$var];
-		}
-		return null;
-	}
 }
