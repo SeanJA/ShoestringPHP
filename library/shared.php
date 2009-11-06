@@ -106,9 +106,10 @@ function callHook() {
  */
 
 function __autoload($className) {
-	global $config, $url;
 	
-        //echo "auto_load $className";
+	global $config, $url;
+	$config->auto_load['helpers'][] = 'functions';
+    //echo "auto_load $className";
 	//autoload helpers (load the users helpers, then load ours so functions can be overridden)
 	foreach($config->auto_load['helpers'] as $helper){
 		if(file_exists(ROOT . DS . 'application' . DS . 'helpers' . DS . strtolower($helper) .$config->helper_prefix. '.php')){

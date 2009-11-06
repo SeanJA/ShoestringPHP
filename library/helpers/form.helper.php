@@ -1,177 +1,218 @@
 <?php
 /**
- *
+ * A basic form class that handles creating forms
  */
 class sForm{
+	private $method;
+	private $name;
+	private $echo = 'echo';
+	/**
+	 * 
+	 * @param boolean $echo if this is true, it will echo out each part of the form as it is created
+	 * if it is false, it will return the values to you instead and you can print them out later
+	 * Default: true
+	 */
+	function __construct($echo = true){
+		if(!is_bool($echo)){
+			throw new Exception('$echo must be a boolean value');
+		}
+		$this->echo = $echo;
+	}
 	/**
 	 * Open up the form
 	 * @param string $action Where are we submitting the form to?
 	 * @param string $method How are we submitting the form?
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function open($action, $method, $options=array()){
+	function open($action, $method = 'post', array $attributes=array()){
+		$this->setMethod($method);
 		$action = baseUrl($action);
 		$form = '<form action="'.sEscape::html($action).'" method="'.sEscape::html($method).'" ';
-		$form .= $this->_getOptions($options);
+		$form .= $this->getAttributes($attributes);
 		$form.= ' >';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Open a multi part form (for fileuploads)
 	 * @param string $action Where are we submitting the form to?
 	 * @param string $method How are we submitting the form?
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function openMultipart($action, $method, $options=array()){
-		$options['enctype'] = 'multipart/form-data';
-		$this->open($action, $method, $options);
+	function openMultipart($action, $method='post', array $attributes=array()){
+		$attributes['enctype'] = 'multipart/form-data';
+		$this->open($action, $method, $attributes);
 	}
 
 	/**
 	 * Create a label
 	 * @param string $for
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function label($for, $text, $options=array()){
+	function label($for, $text, array $attributes=array()){
 		$form = '<label for="'.sEscape::html($for).'" ';
-		$form .= $this->_getOptions($options);
+		$form .= $this->getAttributes($attributes);
 		$form.= '>'.sEscape::html($text).' </label>';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a text field
 	 * @param string $name
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function textField($name, $options=array()){
-		$form = '<input type="text" name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" ';
-		$form .= $this->_getOptions($options);
+	function textField($name, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		if(empty($attributes['value'])){
+			$attributes['value'] = '';
+		}
+		$attributes['value'] = $this->getSubmittedValue($attributes['value']);
+		$form = '<input type="text" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a password field
 	 * @param string $name
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function password($name, $options=array()){
-		$form = '<input type="password" name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" ';
-		$form .= $this->_getOptions($options);
+	function password($name, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<input type="password" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a text area
 	 * @param string $name
 	 * @param str $size ROWSxCOLS
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function textArea($name, $size, $content, $options=array()){
+	function textArea($name, $size, $content='', array $attributes=array()){
+		$this->name = sEscape::html($name);
 		$size = strtolower($size);
 		$size = explode('x', $size);
 		if(count($size) != 2){
 			throw new Exception('Size must be ROWSxCOLS which is [int]x[int]');
 		}
-		$form = '<textarea name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" rows="'.sEscape::html($size[0]).'" cols="'.sEscape::html($size[1]).'" ';
-		$form .= $this->_getOptions($options);
+		$content = $this->getSubmittedValue($content);
+		$form = '<textarea name="'.$this->name.'" id="'.$this->nameToId().'" rows="'.sEscape::html($size[0]).'" cols="'.sEscape::html($size[1]).'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' >'.sEscape::html($content).'</textarea>';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a hidden form element
 	 * @param string $name
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function hidden($name, $options=array()){
-		$form = '<input type="hidden" name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" ';
-		$form .= $this->_getOptions($options);
+	function hidden($name, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		if(!$attributes['value']){
+			$attributes['value'] = '';
+		}
+		$form = '<input type="hidden" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
+	}
+
+	/**
+	 * Create a select box
+	 * @param string $name
+	 * @param array $valuesArray
+	 * @param string $selected
+	 * @param array $attributes
+	 */
+	function selectBox($name, array $valuesArray, $selected=null, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$id = $this->nameToId();
+		$form = '<select name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes) . ' >';
+		
+		$selected = $this->getSubmittedValue($selected);
+		
+		if(!array_is_associative($valuesArray) && !is_int($selected)){
+			$values = array_flip($valuesArray);
+			$selected = isset($values[$selected])? $values[$selected]:$selected;
+		}
+		
+		foreach($valuesArray as $value=>$content){
+			$form .= '<option value="'.sEscape::html($value).'"';
+			if($selected == $value){
+				$form .= ' selected = "selected" ';
+			}
+			$form .= '>'.sEscape::html($content).'</option>';
+		}
+		$form .= '</select>';
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a file upload element
 	 * @param str $name
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function file($name, $options=array()){
-		$form = '<input type="file" name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" ';
-		$form .= $this->_getOptions($options);
+	function file($name, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<input type="file" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a checkbox element
 	 * @param str $name
 	 * @param bool checked
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function checkbox($name, $checked=false, $options=array()){
-		$form = '<input type="checkbox" name="'.sEscape::html($name).'" ';
+	function checkbox($name, $checked=false, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$checked = (bool)$this->getSubmittedValue($checked);
+		$form = '<input type="checkbox" name="'.$this->name.'" ';
 		if($checked){
 			$form .= ' checked="checked" ';
 		}
-		$form .= $this->_getOptions($options);
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Create a radio button element
 	 * @param string $name
 	 * @param bool $checked
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function radio($name, $checked=false, $options=array()){
-		$form = '<input type="radio" name="'.sEscape::html($name).'" ';
+	function radio($name, $checked=false, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$checked = (bool)$this->getSubmittedValue($checked);
+		$form = '<input type="radio" name="'.$this->name.'" ';
 		if($checked){
 			$form .= ' checked="checked" ';
 		}
-		$form .= $this->_getOptions($options);
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 	
-	/**
-	 * Create a submit button
-	 * @param string $value
-	 * @param array $options
-	 */
-	function submit($value, $options=array()){
-		$form = '<input type="submit" name="submit" value="'.sEscape::html($value).'" ';
-		$form .= $this->_getOptions($options);
-		$form.= ' />';
-		echo $form;
-	}
-
-	/**
-	 * Create a reset button
-	 * @param string $value
-	 * @param array $options
-	 */
-	function reset($value, $options=array()){
-		$form = '<input type="reset" name="reset" value="'.sEscape::html($value).'" ';
-		$form .= $this->_getOptions($options);
-		$form.= ' />';
-		echo $form;
-	}
-
 	/**
 	 * Create an image input
 	 * @param string $name
 	 * @param string $src
 	 */
-	function image($name, $src, $options=array()){
-		$form = '<input type="image" src="'.sEscape::html($src).'" ';
-		$form .= $this->_getOptions($options);
+	function image($name, $src, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<input type="image" id="'.$this->nameToId().'" src="'.sEscape::html($src).'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
@@ -179,22 +220,51 @@ class sForm{
 	 * @param string $name
 	 * @param string $content
 	 */
-	function button($name, $content, $options=array()){
-		$form = '<button name="'.sEscape::html($name).'" id="'.sEscape::html($name).'" ';
-		$form .= $this->_getOptions($options);
+	function button($name, $content, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<button name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form .= $this->getAttributes($attributes);
 		$form.= '>'.sEscape::html($content).'</button>';
-		echo $form;
+		return $this->returnValue($form);
 	}
+	
+	/**
+	 * Create a submit button
+	 * @param string $value
+	 * @param array $attributes
+	 */
+	function submit($name, $value, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<input type="submit" name="'.$this->name.'" id="'.$this->nameToId().'" value="'.sEscape::html($value).'" ';
+		$form .= $this->getAttributes($attributes);
+		$form.= ' />';
+		return $this->returnValue($form);
+	}
+
+	/**
+	 * Create a reset button
+	 * @param string $value
+	 * @param array $attributes
+	 */
+	function reset($name, $value, array $attributes=array()){
+		$this->name = sEscape::html($name);
+		$form = '<input type="reset" name="'.$this->name.'" id="'.$this->nameToId().'" value="'.sEscape::html($value).'" ';
+		$form .= $this->getAttributes($attributes);
+		$form.= ' />';
+		return $this->returnValue($form);
+	}
+
+	
 	/**
 	 * Start a fieldset
 	 * @param string $legend
-	 * @param array $options
+	 * @param array $attributes
 	 */
-	function openFieldSet($legend, $options=array()){
+	function openFieldSet($legend, array $attributes=array()){
 		$form = '<fieldset ';
-		$form .= $this->_getOptions($options) . ' >';
+		$form .= $this->getAttributes($attributes) . ' >';
 		$form .= '<legend>'.sEscape::html($legend).'</legend>';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
 	/**
@@ -202,59 +272,81 @@ class sForm{
 	 */
 	function closeFieldSet(){
 		$form = '</fieldset>';
-		echo $form;
+		return $this->returnValue($form);
 	}
 
-	/**
-	 *
-	 * @param <type> $name
-	 * @param <type> $valuesArray
-	 * @param <type> $selected
-	 * @param <type> $options
-	 */
-	function selectBox($name, $valuesArray, $selected, $options=array()){
-		$form = '<select name="'.sEscape::html($name).'" id="'.sEscape::html($name).'">';
-		foreach($valuesArray as $value=>$content){
-			$form .= '<option value="'.sEscape::html($value).'"';
-			if($selected === $value){
-				$form .= ' selected = "selected" ';
-			}
-			$form .= '>'.sEscape::html($content).'</option>';
-		}
-		$form .= '</select>';
-		echo $form;
-	}
+	
 
 	/**
 	 * Close the form
 	 */
 	function  close(){
 		$form = '</form>';
-		echo $form;
-	}
-
-	/**
-	 * Make sure we are dealing with an array of options (even an empty one is good!)
-	 * @param array $options
-	 */
-	private function _checkOptions($options){
-		if(!is_array($options)){
-			throw new Exception('Options must be an array!');
-		}
+		return $this->returnValue($form);
 	}
 
 	/**
 	 * Extracts the options from the options array
-	 * @param array $options
-	 * @return <type>
+	 * @param array $attributes
+	 * @return string
 	 */
-	private function _getOptions($options){
-		$this->_checkOptions($options);
-		$form = ' ';
-		foreach($options as $attribute=>$value){
-			$form .= sEscape::html($attribute) . '="'.sEscape::html($value).'" ';
+	private function getAttributes(array $attributes){
+		$attributesString = ' ';
+		foreach($attributes as $attribute=>$value){
+			$attributesString .= sEscape::html($attribute) . '="'.sEscape::html($value).'" ';
 		}
-		return $form.' ';
+		return $attributesString.' ';
 	}
-	
+	/**
+	 * Return the value in the method specified
+	 * @param string $string
+	 * @return string or boolean
+	 */
+	private function returnValue($string){
+		if($this->echo == 'echo'){
+			echo $string;
+		} else {
+			return $string;
+		}
+		return true;
+	}
+	/**
+	 * Set the form method
+	 * @param string $method the method that the form will use to submit itself (either get or post)
+	 */
+	private function setMethod($method='post'){
+		$method = strtoupper($method);
+		if($method !== 'GET'){
+			$method = 'POST';
+		}
+		$this->method = $method;
+	}
+	/**
+	 * Refill the form with the submitted value
+	 * @var string $oldValue
+	 * @return string
+	 */
+	private function getSubmittedValue($oldValue = ''){
+		if($this->method == 'POST'){
+			if(array_key_exists($this->name, $_POST)){
+				return $_POST[$this->name];
+			}
+		} elseif($this->method == 'GET'){
+			if(array_key_exists($this->name, $_GET)){
+				return $_GET[$this->name];
+			}
+		}
+		return $oldValue;
+	}
+	/**
+	 * Make the id for the field valid
+	 * @return string
+	 */
+	private function nameToId(){
+		$id = $this->name;
+		$id = str_replace('][', '_', $id);
+		$id = str_replace('[', '', $id);
+		$id = str_replace(']', '', $id);
+		return sEscape::html($id);
+	}
 }

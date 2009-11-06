@@ -18,6 +18,7 @@ class sTemplate extends sRoot{
 	 */
 	public function render($__renderThisAction,$__useThisData=array()) {
 		extract($__useThisData);
+		$this->controller = strtolower($this->controller);
 		if($this->header){
 			if (file_exists(ROOT . DS . 'application' . DS . 'views' . DS . $this->controller . DS . 'header.php')) {
 				include (ROOT . DS . 'application' . DS . 'views' . DS . $this->controller . DS . 'header.php');
