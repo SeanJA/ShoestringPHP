@@ -1,15 +1,7 @@
 <?php
 
-class Docs_Controller extends sController {
-	private $user;
-	private $data;
+class Docs_Controller extends Controller {
 	function  __construct($controller) {
-		$this->user = new sUser();
-		$this->data = array();
-		$this->data['loggedIn'] = false;
-		if($this->user->loggedIn()) {
-			$this->data['loggedIn'] = true;
-		}
 		parent::__construct($controller);
 		$this->loadModel('Doc');
 	}

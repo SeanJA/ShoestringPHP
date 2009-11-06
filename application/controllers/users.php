@@ -1,17 +1,5 @@
 <?php
 class Users_Controller extends sController {
-	private $user;
-	private $data;
-	function  __construct($controller) {
-		$this->user = new sUser();
-		$this->data = array();
-		$this->data['loggedIn'] = false;
-		if($this->user->loggedIn()) {
-			$this->data['loggedIn'] = true;
-			$this->data['user'] = $this->user;
-		}
-		parent::__construct($model, $controller);
-	}
     /**
      * The default page, if you are logged in it will let you see it, otherwise it will
      * throw you out to the login page

@@ -4,30 +4,7 @@
  * a controller to handle errors so that your errors are themed
  * the same way that your site is themed
  */
-class Errors_Controller extends sController {
-    /**
-     * The current user
-     * @var sUser
-     */
-	private $user;
-    /**
-     * The data that will be passed to the view
-     * @var array
-     */
-	private $data;
-    /**
-     * Set some default options and then move along
-     * @param string $controller
-     */
-	function  __construct($controller) {
-		$this->user = new sUser();
-		$this->data = array();
-		$this->data['loggedIn'] = false;
-		if($this->user->loggedIn()) {
-			$this->data['loggedIn'] = true;
-		}
-		parent::__construct($controller);
-	}
+class Errors_Controller extends controller {
     /**
      * Display a 404 error
      */
