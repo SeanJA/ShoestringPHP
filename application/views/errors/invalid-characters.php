@@ -1,5 +1,5 @@
 <div class="error">
 	<p>
-		<?=$error404?>
+		<?php echo sEscape::html($error404); ?>
 	</p>
 </div>

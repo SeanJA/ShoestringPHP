@@ -39,7 +39,7 @@ class sUser extends sRoot{
 	private $encryption;
     /**
      * The encryption types that we allow
-     * @var <type>
+     * @var array
      */
 	private $encryptionTypes = array('sha1', 'md5');
 	
@@ -124,17 +124,17 @@ class sUser extends sRoot{
 
 	/**
 	 * Retrieve a user value (using the names of the columns in your users table)
-	 * @param string $name
+	 * @param string $var
 	 * @return multiple
 	 */
-	public function  __get($name) {
+	public function  __get($var) {
 		if (empty($this->userId)) {
 			$this->error('No user is loaded');
 		}
-		if (!isset($this->userData[$name])) {
-			$this->error('Unknown property <b>'.$name.'</b>');
+		if (!isset($this->userData[$var])) {
+			$this->error('Unknown property <b>'.$var.'</b>');
 		}
-		return $this->userData[$name];
+		return $this->userData[$var];
 	}
 
 	/**

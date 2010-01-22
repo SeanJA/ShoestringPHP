@@ -66,9 +66,10 @@ function callHook() {
 		die(header('Location: '.$config->base_url.$config->index_file.$config->default_location));
 	} else {
 		//code igniter style
-		if ( ! preg_match("|^[".preg_quote($config->allowed_uri_characters)."]+$|i", $url)){
-			die(header('Location: '.$config->base_url.$config->index_file.'errors/invalid-characters/'));
-		}
+//		if ( ! preg_match("|^[".preg_quote($config->allowed_uri_characters)."]+$|i", $url)){
+//			var_dump(preg_quote($config->allowed_uri_characters));
+//			die(header('Location: '.$config->base_url.$config->index_file.'errors/invalid-characters/'));
+//		}
 		$urlArray = array();
 		$urlArray = explode("/",$url);
 		if($urlArray[0] == ''){
@@ -104,12 +105,10 @@ function callHook() {
 /**
  * Autoload any classes that are required
  */
-
-function __autoload($className) {
-	
+function shoestringAutoload($className) {
 	global $config, $url;
 	$config->auto_load['helpers'][] = 'functions';
-    //echo "auto_load $className";
+	//echo "auto_load $className";
 	//autoload helpers (load the users helpers, then load ours so functions can be overridden)
 	foreach($config->auto_load['helpers'] as $helper){
 		if(file_exists(ROOT . DS . 'application' . DS . 'helpers' . DS . strtolower($helper) .$config->helper_prefix. '.php')){
@@ -125,8 +124,8 @@ function __autoload($className) {
 		if (file_exists(ROOT . DS . 'application' . DS . 'controllers' . DS . strtolower($className) . '.php')) {
 			include_once(ROOT . DS . 'application' . DS . 'controllers' . DS . strtolower($className) . '.php');
 		} else {
-                  error404($url);
-                }
+				  error404($url);
+				}
 	}
 	//library classes
 	else if (file_exists(ROOT . DS . 'application' . DS . 'library' . DS . strtolower($className) . '.class.php')) {
@@ -143,7 +142,7 @@ function __autoload($className) {
 		//throw new Exception('Class not found '. strtolower($className));
 	}
 }
-
+spl_autoload_register('shoestringAutoload');
 
 // set to the user defined error handler
 

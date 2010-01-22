@@ -1,5 +1,5 @@
 <?php
-
+xdebug_start_trace('c:\\temp');
 //shorten the directory separator
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', getcwd());

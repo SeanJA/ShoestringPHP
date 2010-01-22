@@ -15,11 +15,11 @@ $config['base_url'] = 'http://localhost/shoestring/';
  *
  * either 'index.php/' or '' if you are using rewrite
  */
-$config['index_file'] = '';
+$config['index_file'] = 'index.php/';
 /**
  * The characters that we want to allow in our uri
  */
-$config['allowed_uri_characters'] = 'a-z 0-9~%.:_/-';
+$config['allowed_uri_characters'] = '~%.:/-';
 /**
  * The character encoding you are using on your site
  */

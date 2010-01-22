@@ -6,17 +6,17 @@
 	<?php charset('utf-8')?>
 
 	<title><?php if(isset($title)){echo $title.' - ';} ?>ShoestringPHP</title>
-	
+
 	<?php css('style.css')?>
-	
+
 	<?php js('http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js'); ?>
-	
+
 	<?php js('sh_main.js'); ?>
-	
+
 	<?php js('sh_php.js'); ?>
-	
+
 	<?php css('sh_style.css'); ?>
-	
+
 </head>
 <body onload="sh_highlightDocument();">
 	<div id="header">
@@ -38,15 +38,14 @@
 	</div>
 	<div id="page">
 	<h3>
-		<?php if(isset($header)){echo $header;} else{ ?>ShoestringPHP <? } ?>
+		<?php if(isset($header)){echo sEscape::html($header);} else{ echo 'ShoestringPHP'; } ?>
 	</h3>
-	<?php echo isset($message) ? '<p class="message">'.$message.'</p>' : ''; ?>
-	<?php echo isset($error) ? '<p class="error">'.$error.'</p>' : ''; ?>
-	<?php 
+	<?php echo isset($message) ? '<p class="message">'.sEscape::html($message).'</p>' : ''; ?>
+	<?php echo isset($error) ? '<p class="error">'.sEscape::html($error).'</p>' : ''; ?>
+	<?php
 	if(!empty($errors)){
 		foreach($errors as $error){
 			echo '<p class="error">'.sEscape::html($error).'</p>';
 		}
 	}
-
 	?>

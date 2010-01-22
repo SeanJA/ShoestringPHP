@@ -21,7 +21,7 @@ class sValidate{
 	}
 	/**
 	 * Validate a url
-	 * @param url $url
+	 * @param string $url
 	 * @return bool
 	 */
 	static function url($url){

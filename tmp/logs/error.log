@@ -441,3 +441,92 @@
 [06-Nov-2009 16:31:51] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:98
 [06-Nov-2009 16:31:51] PHP   6. Forms_Controller->index() C:\xampp\htdocs\shoestring\library\shared.php:0
 [06-Nov-2009 16:31:51] PHP   7. get_class_methods() C:\xampp\htdocs\shoestring\application\controllers\forms.php:6
+[27-Nov-2009 14:14:25] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\shoestring\library\shared.php:70) in C:\xampp\htdocs\shoestring\library\shared.php on line 71
+[27-Nov-2009 14:15:58] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\shoestring\library\shared.php:70) in C:\xampp\htdocs\shoestring\library\shared.php on line 71
+[27-Nov-2009 14:16:00] PHP Warning:  Cannot modify header information - headers already sent by (output started at C:\xampp\htdocs\shoestring\library\shared.php:70) in C:\xampp\htdocs\shoestring\library\shared.php on line 71
+[27-Nov-2009 14:16:35] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 52
+[27-Nov-2009 14:20:57] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 51
+[27-Nov-2009 14:21:10] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 51
+[27-Nov-2009 14:23:01] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 51
+[27-Nov-2009 14:24:30] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 51
+[27-Nov-2009 14:24:30] PHP Stack trace:
+[27-Nov-2009 14:24:30] PHP   1. {main}() C:\xampp\htdocs\shoestring\index.php:0
+[27-Nov-2009 14:24:30] PHP   2. require_once() C:\xampp\htdocs\shoestring\index.php:7
+[27-Nov-2009 14:24:30] PHP   3. require_once() C:\xampp\htdocs\shoestring\library\bootstrap.php:10
+[27-Nov-2009 14:24:30] PHP   4. callHook() C:\xampp\htdocs\shoestring\library\shared.php:154
+[27-Nov-2009 14:24:30] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:99
+[27-Nov-2009 14:24:30] PHP   6. Errors_Controller->invalid_characters() C:\xampp\htdocs\shoestring\library\shared.php:0
+[27-Nov-2009 14:24:30] PHP   7. sTemplate->render() C:\xampp\htdocs\shoestring\application\controllers\errors.php:26
+[27-Nov-2009 14:24:43] PHP Fatal error:  Uncaught exception 'Exception' with message 'No database selected on line 311 of file \library\classes\smysqlquery.class.php' in C:\xampp\htdocs\shoestring\library\classes\sroot.class.php:45
+Stack trace:
+#0 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(71): sRoot->error('No database sel...')
+#1 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(311): sMYSQLQuery->queryDb('SELECT `file` F...')
+#2 C:\xampp\htdocs\shoestring\library\classes\squery.class.php(158): sMYSQLQuery->selectAll()
+#3 C:\xampp\htdocs\shoestring\application\models\doc.php(52): sQuery->selectAll()
+#4 C:\xampp\htdocs\shoestring\application\controllers\docs.php(9): Doc->getFiles()
+#5 [internal function]: Docs_Controller->index()
+#6 C:\xampp\htdocs\shoestring\library\shared.php(99): call_user_func_array(Array, Array)
+#7 C:\xampp\htdocs\shoestring\library\shared.php(154): callHook()
+#8 C:\xampp\htdocs\shoestring\library\bootstrap.php(10): require_once('C:\xampp\htdocs...')
+#9 C:\xampp\htdocs\shoestring\index.php( in C:\xampp\htdocs\shoestring\library\classes\sroot.class.php on line 45
+[27-Nov-2009 14:28:24] PHP Fatal error:  Uncaught exception 'Exception' with message 'The database you provided in the config file does not exist.' in C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php:31
+Stack trace:
+#0 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(525): sMYSQLQuery->connect()
+#1 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(159): sMYSQLQuery->escape('docs')
+#2 C:\xampp\htdocs\shoestring\library\classes\squery.class.php(67): sMYSQLQuery->from(Array)
+#3 C:\xampp\htdocs\shoestring\application\models\doc.php(48): sQuery->from('docs')
+#4 C:\xampp\htdocs\shoestring\application\controllers\docs.php(9): Doc->getFiles()
+#5 [internal function]: Docs_Controller->index()
+#6 C:\xampp\htdocs\shoestring\library\shared.php(99): call_user_func_array(Array, Array)
+#7 C:\xampp\htdocs\shoestring\library\shared.php(154): callHook()
+#8 C:\xampp\htdocs\shoestring\library\bootstrap.php(10): require_once('C:\xampp\htdocs...')
+#9 C:\xampp\htdocs\shoestring\index.php(7): require_once('C:\xampp\htdocs...')
+ in C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php on line 31
+[27-Nov-2009 14:30:48] PHP Fatal error:  Uncaught exception 'Exception' with message 'The database you provided in the config file does not exist shoestring_test.' in C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php:31
+Stack trace:
+#0 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(525): sMYSQLQuery->connect()
+#1 C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php(159): sMYSQLQuery->escape('docs')
+#2 C:\xampp\htdocs\shoestring\library\classes\squery.class.php(67): sMYSQLQuery->from(Array)
+#3 C:\xampp\htdocs\shoestring\application\models\doc.php(48): sQuery->from('docs')
+#4 C:\xampp\htdocs\shoestring\application\controllers\docs.php(9): Doc->getFiles()
+#5 [internal function]: Docs_Controller->index()
+#6 C:\xampp\htdocs\shoestring\library\shared.php(99): call_user_func_array(Array, Array)
+#7 C:\xampp\htdocs\shoestring\library\shared.php(154): callHook()
+#8 C:\xampp\htdocs\shoestring\library\bootstrap.php(10): require_once('C:\xampp\htdocs...')
+#9 C:\xampp\htdocs\shoestring\index.php(7): require_once('C:\xa in C:\xampp\htdocs\shoestring\library\classes\smysqlquery.class.php on line 31
+[27-Nov-2009 14:32:26] PHP Parse error:  syntax error, unexpected $end in C:\xampp\htdocs\shoestring\application\views\header.php on line 51
+[27-Nov-2009 14:32:26] PHP Stack trace:
+[27-Nov-2009 14:32:26] PHP   1. {main}() C:\xampp\htdocs\shoestring\index.php:0
+[27-Nov-2009 14:32:26] PHP   2. require_once() C:\xampp\htdocs\shoestring\index.php:7
+[27-Nov-2009 14:32:26] PHP   3. require_once() C:\xampp\htdocs\shoestring\library\bootstrap.php:10
+[27-Nov-2009 14:32:26] PHP   4. callHook() C:\xampp\htdocs\shoestring\library\shared.php:154
+[27-Nov-2009 14:32:26] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:99
+[27-Nov-2009 14:32:26] PHP   6. Docs_Controller->index() C:\xampp\htdocs\shoestring\library\shared.php:0
+[27-Nov-2009 14:32:26] PHP   7. sTemplate->render() C:\xampp\htdocs\shoestring\application\controllers\docs.php:10
+[27-Nov-2009 14:33:41] PHP Warning:  include(C:\xampp\htdocs\shoestring\application\views\header.php) [<a href='function.include'>function.include</a>]: failed to open stream: No such file or directory in C:\xampp\htdocs\shoestring\library\classes\stemplate.class.php on line 26
+[27-Nov-2009 14:33:41] PHP Stack trace:
+[27-Nov-2009 14:33:41] PHP   1. {main}() C:\xampp\htdocs\shoestring\index.php:0
+[27-Nov-2009 14:33:41] PHP   2. require_once() C:\xampp\htdocs\shoestring\index.php:7
+[27-Nov-2009 14:33:41] PHP   3. require_once() C:\xampp\htdocs\shoestring\library\bootstrap.php:10
+[27-Nov-2009 14:33:41] PHP   4. callHook() C:\xampp\htdocs\shoestring\library\shared.php:154
+[27-Nov-2009 14:33:41] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:99
+[27-Nov-2009 14:33:41] PHP   6. Docs_Controller->index() C:\xampp\htdocs\shoestring\library\shared.php:0
+[27-Nov-2009 14:33:41] PHP   7. sTemplate->render() C:\xampp\htdocs\shoestring\application\controllers\docs.php:10
+[27-Nov-2009 14:33:41] PHP Warning:  include() [<a href='function.include'>function.include</a>]: Failed opening 'C:\xampp\htdocs\shoestring\application\views\header.php' for inclusion (include_path='.;C:\xampp\php\PEAR') in C:\xampp\htdocs\shoestring\library\classes\stemplate.class.php on line 26
+[27-Nov-2009 14:33:41] PHP Stack trace:
+[27-Nov-2009 14:33:41] PHP   1. {main}() C:\xampp\htdocs\shoestring\index.php:0
+[27-Nov-2009 14:33:41] PHP   2. require_once() C:\xampp\htdocs\shoestring\index.php:7
+[27-Nov-2009 14:33:41] PHP   3. require_once() C:\xampp\htdocs\shoestring\library\bootstrap.php:10
+[27-Nov-2009 14:33:41] PHP   4. callHook() C:\xampp\htdocs\shoestring\library\shared.php:154
+[27-Nov-2009 14:33:41] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:99
+[27-Nov-2009 14:33:41] PHP   6. Docs_Controller->index() C:\xampp\htdocs\shoestring\library\shared.php:0
+[27-Nov-2009 14:33:41] PHP   7. sTemplate->render() C:\xampp\htdocs\shoestring\application\controllers\docs.php:10
+[27-Nov-2009 14:34:36] PHP Parse error:  syntax error, unexpected '}', expecting ',' or ';' in C:\xampp\htdocs\shoestring\application\views\header.php on line 41
+[27-Nov-2009 14:34:36] PHP Stack trace:
+[27-Nov-2009 14:34:36] PHP   1. {main}() C:\xampp\htdocs\shoestring\index.php:0
+[27-Nov-2009 14:34:36] PHP   2. require_once() C:\xampp\htdocs\shoestring\index.php:7
+[27-Nov-2009 14:34:36] PHP   3. require_once() C:\xampp\htdocs\shoestring\library\bootstrap.php:10
+[27-Nov-2009 14:34:36] PHP   4. callHook() C:\xampp\htdocs\shoestring\library\shared.php:154
+[27-Nov-2009 14:34:36] PHP   5. call_user_func_array() C:\xampp\htdocs\shoestring\library\shared.php:99
+[27-Nov-2009 14:34:36] PHP   6. Docs_Controller->index() C:\xampp\htdocs\shoestring\library\shared.php:0
+[27-Nov-2009 14:34:36] PHP   7. sTemplate->render() C:\xampp\htdocs\shoestring\application\controllers\docs.php:10

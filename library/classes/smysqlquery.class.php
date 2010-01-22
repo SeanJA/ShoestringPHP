@@ -28,11 +28,11 @@ class sMYSQLQuery extends sRoot {
 					return true;
 				}
 				else {
-					return false;
+					throw new Exception('The database you provided in the config file does not exist '.$dbName.'.');
 				}
 			}
 			else {
-				return false;
+				throw new Exception('Could not connect to the database using the values in the config file.');
 			}
 		}
 		return true;

@@ -1,8 +1,8 @@
 <div class="error_404">
 	<p>
-		<?=$error404?>
+		<?php echo sEscape::html($error404); ?>
 	</p>
 	<p>
-		<?=$page?>
+		<?php echo sEscape::html($page); ?>
 	</p>
 </div>
