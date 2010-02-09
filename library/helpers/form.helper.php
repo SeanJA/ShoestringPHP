@@ -66,8 +66,7 @@ class sForm{
 		if(empty($attributes['value'])){
 			$attributes['value'] = '';
 		}
-		$attributes['value'] = $this->getSubmittedValue($attributes['value']);
-		$form = '<input type="text" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<input type="text" name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -80,7 +79,7 @@ class sForm{
 	 */
 	function password($name, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<input type="password" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<input type="password" name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -99,8 +98,7 @@ class sForm{
 		if(count($size) != 2){
 			throw new Exception('Size must be ROWSxCOLS which is [int]x[int]');
 		}
-		$content = $this->getSubmittedValue($content);
-		$form = '<textarea name="'.$this->name.'" id="'.$this->nameToId().'" rows="'.sEscape::html($size[0]).'" cols="'.sEscape::html($size[1]).'" ';
+		$form = '<textarea name="'.$this->name.'" rows="'.sEscape::html($size[0]).'" cols="'.sEscape::html($size[1]).'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' >'.sEscape::html($content).'</textarea>';
 		return $this->returnValue($form);
@@ -116,7 +114,7 @@ class sForm{
 		if(!$attributes['value']){
 			$attributes['value'] = '';
 		}
-		$form = '<input type="hidden" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<input type="hidden" name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -132,10 +130,8 @@ class sForm{
 	function selectBox($name, array $valuesArray, $selected=null, array $attributes=array()){
 		$this->name = sEscape::html($name);
 		$id = $this->nameToId();
-		$form = '<select name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<select name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes) . ' >';
-		
-		$selected = $this->getSubmittedValue($selected);
 		
 		if(!array_is_associative($valuesArray) && !is_int($selected)){
 			$values = array_flip($valuesArray);
@@ -160,7 +156,7 @@ class sForm{
 	 */
 	function file($name, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<input type="file" name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<input type="file" name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -174,7 +170,6 @@ class sForm{
 	 */
 	function checkbox($name, $checked=false, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$checked = (bool)$this->getSubmittedValue($checked);
 		$form = '<input type="checkbox" name="'.$this->name.'" ';
 		if($checked){
 			$form .= ' checked="checked" ';
@@ -192,7 +187,6 @@ class sForm{
 	 */
 	function radio($name, $checked=false, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$checked = (bool)$this->getSubmittedValue($checked);
 		$form = '<input type="radio" name="'.$this->name.'" ';
 		if($checked){
 			$form .= ' checked="checked" ';
@@ -209,7 +203,7 @@ class sForm{
 	 */
 	function image($name, $src, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<input type="image" id="'.$this->nameToId().'" src="'.sEscape::html($src).'" ';
+		$form = '<input type="image" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -222,7 +216,7 @@ class sForm{
 	 */
 	function button($name, $content, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<button name="'.$this->name.'" id="'.$this->nameToId().'" ';
+		$form = '<button name="'.$this->name.'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= '>'.sEscape::html($content).'</button>';
 		return $this->returnValue($form);
@@ -235,7 +229,7 @@ class sForm{
 	 */
 	function submit($name, $value, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<input type="submit" name="'.$this->name.'" id="'.$this->nameToId().'" value="'.sEscape::html($value).'" ';
+		$form = '<input type="submit" name="'.$this->name.'" value="'.sEscape::html($value).'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -248,7 +242,7 @@ class sForm{
 	 */
 	function reset($name, $value, array $attributes=array()){
 		$this->name = sEscape::html($name);
-		$form = '<input type="reset" name="'.$this->name.'" id="'.$this->nameToId().'" value="'.sEscape::html($value).'" ';
+		$form = '<input type="reset" name="'.$this->name.'" value="'.sEscape::html($value).'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= ' />';
 		return $this->returnValue($form);
@@ -291,6 +285,9 @@ class sForm{
 	 * @return string
 	 */
 	private function getAttributes(array $attributes){
+		if(!array_key_exists('id', $attributes)){
+			$attributes['id'] = $this->nameToId();
+		}
 		$attributesString = ' ';
 		foreach($attributes as $attribute=>$value){
 			$attributesString .= sEscape::html($attribute) . '="'.sEscape::html($value).'" ';
@@ -320,23 +317,6 @@ class sForm{
 			$method = 'POST';
 		}
 		$this->method = $method;
-	}
-	/**
-	 * Refill the form with the submitted value
-	 * @var string $oldValue
-	 * @return string
-	 */
-	private function getSubmittedValue($oldValue = ''){
-		if($this->method == 'POST'){
-			if(array_key_exists($this->name, $_POST)){
-				return $_POST[$this->name];
-			}
-		} elseif($this->method == 'GET'){
-			if(array_key_exists($this->name, $_GET)){
-				return $_GET[$this->name];
-			}
-		}
-		return $oldValue;
 	}
 	/**
 	 * Make the id for the field valid
