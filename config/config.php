@@ -9,7 +9,7 @@ $config['development_environment'] = true;
  *
  * always preceeded by http:// or https:// or ...
  */
-$config['base_url'] = 'http://localhost/shoestring/';
+$config['base_url'] = 'http://shoestring.127.ca/';
 /**
  * The index file for your project (with the trailing slash)
  *

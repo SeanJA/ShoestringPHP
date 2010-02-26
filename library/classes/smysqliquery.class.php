@@ -1,28 +1,11 @@
 <?php
 
-class sMYSQLiQuery extends sRoot {
+class sMYSQLiQuery extends sMYSQLQuery {
 	/**
 	 *
 	 * @var mysqli
 	 */
 	private $db = null;
-	/**
-	 *
-	 * @var mysqli_result
-	 */
-	private $result = null;
-	private $lastInsertId = null;
-	private $affectedRows = null;
-	/**
-	 *
-	 * @var sQueryWrapper
-	 */
-	private $query;
-
-	public function __construct() {
-		parent::__construct();
-		$this->query = new sQueryWrapper();
-	}
 
 	/**
 	 * Connect to the database
@@ -88,7 +71,7 @@ class sMYSQLiQuery extends sRoot {
 			$tempResults = array();
 			$numOfFields = $this->getNumRows();
 			$result = $this->result->fetch_all(MYSQLI_ASSOC);
-			return($result);
+			return $result;
 		}
 		return $this->result;
 	}
@@ -144,14 +127,6 @@ class sMYSQLiQuery extends sRoot {
 	}
 
 	/**
-	 * Add a table to the query
-	 * @param string $table
-	 */
-	public function setFrom($table) {
-		return $this->query->setFrom('`'.$this->escape($table).'`');
-	}
-
-	/**
 	 * Add some tables to your query
 	 */
 	public function from() {
@@ -169,7 +144,7 @@ class sMYSQLiQuery extends sRoot {
 	 * Set the group by statement
 	 * @param string $column
 	 */
-	public function addGroupBy($column) {
+	public function groupBy($column) {
 		return $this->query->addGroupBy('`'.$this->escape($column).'`');
 	}
 
@@ -177,7 +152,7 @@ class sMYSQLiQuery extends sRoot {
 	 * set the order
 	 * @param string $column
 	 */
-	public function addOrder($column, $order='ASC') {
+	public function order($column, $order='ASC') {
 		return $this->query->addOrder("`{$this->escape($column)}`", $this->escape($order));
 	}
 
@@ -185,7 +160,7 @@ class sMYSQLiQuery extends sRoot {
 	 * Set the limit
 	 * @param int $int
 	 */
-	public function setLimit($int) {
+	public function limit($int) {
 		return $this->query->setLimit($this->escape($int));
 	}
 
@@ -193,7 +168,7 @@ class sMYSQLiQuery extends sRoot {
 	 * Set the offset
 	 * @param int $int
 	 */
-	public function setOffset($int) {
+	public function offset($int) {
 		return $this->query->setOffset($this->escape($int));
 	}
 
@@ -201,7 +176,7 @@ class sMYSQLiQuery extends sRoot {
 	 * Add one of the columns that you want to retrieve
 	 * @param string $column
 	 */
-	public function addColumn($column) {
+	public function column($column) {
 		if(strpos($column, ' ') === false) {
 			return $this->query->addColumn('`'.$this->escape($column).'`');
 		} else {
@@ -212,7 +187,7 @@ class sMYSQLiQuery extends sRoot {
 	/**
 	 * Add the columns that you want to retrieve
 	 */
-	public function addColumns() {
+	public function columns() {
 		$columns = func_get_args();
 		if(is_array($columns[0])) {
 			$columns = $columns[0];
@@ -231,7 +206,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @param string $value
 	 * @param string $comparison
 	 */
-	public function addWhere($column, $value=null, $comparison=null) {
+	public function where($column, $value=null, $comparison=null) {
 
 		if(is_object($value)) {
 			return $this->query->addWhere($this->escape($column), $value,  $this->escape($comparison));
@@ -260,7 +235,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @param string $field
 	 * @param string $value
 	 */
-	public function addField($field, $value) {
+	public function field($field, $value) {
 		return $this->query->addField("`{$this->escape($field)}`", "'{$this->escape($value)}'");
 	}
 
@@ -270,7 +245,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addJoin($table, $where) {
+	public function join($table, $where) {
 		if(strpos($table, ' ') === false) {
 			return $this->query->addJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -284,7 +259,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addLeftJoin($table, $where) {
+	public function leftJoin($table, $where) {
 		if(strpos($table, ' ') === false) {
 			return $this->query->addLeftJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -298,7 +273,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addRightJoin($table, $where) {
+	public function rightJoin($table, $where) {
 		if(strpos($table, ' ') === false) {
 			return $this->query->addRightJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -322,7 +297,7 @@ class sMYSQLiQuery extends sRoot {
 	 * @return array
 	 */
 	public function selectRow() {
-		$this->query->setLimit(1);
+		$this->query->limit(1);
 		$query = $this->getSelect();
 		$result = $this->queryDb($query);
 		$this->freeResult($this->result);
@@ -410,7 +385,6 @@ class sMYSQLiQuery extends sRoot {
 		}
 		return $this->affectedRows;
 	}
-
 	/**
 	 * Get the insert Query
 	 * @return string
@@ -498,7 +472,7 @@ class sMYSQLiQuery extends sRoot {
 
 	/**
 	 * Get the last insert id returned
-	 * @return int
+	 * @return mixed
 	 */
 	public function lastInsertId() {
 		if($this->insert_id) {
@@ -509,20 +483,20 @@ class sMYSQLiQuery extends sRoot {
 
 	/**
 	 * Get the count from the query
-	 * @return string
+	 * @return int
 	 */
 	public function count() {
 		$sql = $this->getCount();
 		$result = $this->queryDb($sql);
 		$result = (int)$result[0]['COUNT(*)'];
 		$this->freeResult();
-		return $result;
+		return (int)$result;
 	}
 
 	/**
 	 * Escape a variable
 	 * @param $value
-	 * @return <type>
+	 * @return string
 	 */
 	private function escape($value) {
 		if(get_magic_quotes_gpc()) {
@@ -532,127 +506,5 @@ class sMYSQLiQuery extends sRoot {
 			$this->connect();
 		}
 		return $this->db->real_escape_string($value, $this->db);
-	}
-	/**
-	 * Get the string for the columns
-	 * @return <type>
-	 */
-	private function getColumnString() {
-		$sql = '';
-		$columns = $this->query->getColumns();
-		if($columns) {
-			$sql.= ' '. implode(", ", $columns) . "\n";
-		} else {
-			$sql .= ' * ' . "\n";
-		}
-		return rtrim($sql);
-	}
-
-	private function getJoinString() {
-		$joins = $this->query->getJoins();
-		$sql = '';
-		if($joins) {
-			$sql .= "\n " . implode("\n ", $joins) . "\n";
-		}
-		return $sql;
-	}
-
-	private function getTableString() {
-		$tables = $this->query->getTables();
-		$sql = '';
-		if($tables) {
-			$sql .= implode(', ', $tables) . "\n";
-		}
-		return $sql;
-	}
-
-	private function getWhereString() {
-		$whereArray = $this->query->getWheres();
-		$sql = '';
-		if ($whereArray['columns']) {
-			$sql .= ' WHERE ';
-			foreach($whereArray['columns'] as $k=>$column) {
-				if(is_object($whereArray['values'][$k])) {
-					$whereArray['values'][$k] = $this->getSelect($whereArray['values'][$k]);
-				}
-				$whereString = "{$whereArray['columns'][$k]} {$whereArray['comparisons'][$k]} {$whereArray['values'][$k]}";
-				if($k == 0) {
-					$sql.= " $whereString \n";
-					continue;
-				}
-				$sql .= "  AND $whereString \n";
-			}
-		}
-		return $sql;
-	}
-
-	private function getFieldString() {
-		$fields = $this->query->getFields();
-		$sql = ' (';
-		$sql.= implode(', ', $fields);
-		$sql.= ") \n";
-		return $sql;
-	}
-
-	private function getValueString() {
-		$values = $this->query->getValues();
-		$sql = ' VALUES';
-		$sql.= ' (';
-		$sql.= implode(', ', $values);
-		$sql.= ") \n";
-		return $sql;
-	}
-
-	private function getFieldValueString() {
-		$fields = $this->query->getFields();
-		$values = $this->query->getValues();
-		$sql = '';
-		foreach($fields as $i=>$field) {
-			if($i != 0) {
-				$sql .= ', ';
-			}
-			$sql .= ' ' . $fields[$i] . ' = '. $values[$i];
-		}
-		return $sql;
-	}
-
-	private function getGroupByString() {
-		$groupBys = $this->query->getGroupBys();
-		$sql = '';
-		if ($groupBys) {
-			$sql .= " GROUP BY ";
-			$sql .= implode(", ", $groupBys);
-			$sql .= "\n";
-		}
-		return $sql;
-	}
-
-	private function getOrderByString() {
-		$orderBys = $this->query->getOrderBys();
-		$sql = '';
-		if ($orderBys) {
-			$sql .= " ORDER BY ";
-			$sql .= implode(", ", $orderBys);
-			$sql .= "\n";
-		}
-		return $sql;
-	}
-
-	private function getLimitString() {
-		$limit = $this->query->getLimit();
-		$sql = '';
-		if ($limit) {
-			$sql.= " LIMIT $limit\n";
-		}
-		return $sql;
-	}
-
-	private function getOffsetString() {
-		$offset = $this->query->getOffset();
-		$sql = '';
-		if ($offset) {
-			$sql .= " OFFSET $offset\n";
-		}
-		return $sql;
 	}
 }

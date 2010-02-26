@@ -10,12 +10,17 @@ class Doc extends sModel {
      */
 	function create($methodName, $comments, $example, $file){
 		$q = new sQuery();
-		$q->setInto('docs');
-		$q->addField('method_name', $methodName);
-		$q->addField('comments', $comments);
-		$q->addField('example', $example);
-		$q->addField('file', $file);
-		return $q->insert();
+		return $q->table('docs')
+				->set('method_name', $methodName)
+				->set('comments', $comments)
+				->set('example', $example)
+				->set('file', $file)
+				->insert();
+//		$q->addField('method_name', $methodName);
+//		$q->addField('comments', $comments);
+//		$q->addField('example', $example);
+//		$q->addField('file', $file);
+//		return $q->insert();
 	}
     /**
      * Get the documentation for a specific file
@@ -24,9 +29,9 @@ class Doc extends sModel {
      */
 	function getDocs($fileName){
 		$q = new sQuery();
-		$q->from('docs');
-		$q->addWhere('file', $fileName);
-		return $q->selectAll();
+		return $q->from('docs')
+				->where('file', $fileName)
+				->selectAll();
 	}
     /**
      * Get a specific doc
@@ -35,9 +40,9 @@ class Doc extends sModel {
      */
 	function getDoc($id){
 		$q = new sQuery();
-		$q->from('docs');
-		$q->addWhere('id', $id);
-		return $q->selectRow();
+		return $q->from('docs')
+				->where('id', $id)
+				->selectRow();
 	}
     /**
      * Get all of the files that are documented
@@ -45,11 +50,11 @@ class Doc extends sModel {
      */
 	function getFiles(){
 		$q = new sQuery();
-		$q->from('docs');
-		$q->addColumn('file');
-		$q->addOrder('file', 'ASC');
-		$q->addGroupBy('file');
-		$result = $q->selectAll();
+		$result = $q->from('docs')
+				->column('file')
+				->orderBy('file', 'ASC')
+				->groupBy('file')
+				->selectAll();
 		foreach($result as $res){
 			$return[] = $res['file'];
 		}

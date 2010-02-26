@@ -1,7 +1,7 @@
 <?php
 ini_set("include_path", "../library/classes".PATH_SEPARATOR."../../../library/classes".PATH_SEPARATOR.ini_get("include_path"));
 require_once 'PHPUnit/Framework.php';
-
+require_once 'sroot.class.php';
 require_once 'svalidate.class.php';
 
 /**

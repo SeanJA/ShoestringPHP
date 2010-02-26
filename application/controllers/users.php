@@ -1,5 +1,5 @@
 <?php
-class Users_Controller extends sController {
+class Users_Controller extends controller {
     /**
      * The default page, if you are logged in it will let you see it, otherwise it will
      * throw you out to the login page

@@ -18,6 +18,6 @@ if(!isset($file)){
 		<?php $f->label('example', 'Example:'); ?>
 		<?php $f->textArea('example', '5x60', $this->post('example')); ?> <br />
 
-		<?php $f->submit('Submit'); ?>
+		<?php $f->submit('Submit', 'Submit'); ?>
 	</div>
 <?php $f->close(); ?>

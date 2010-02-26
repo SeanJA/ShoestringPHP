@@ -1,6 +1,6 @@
 <?php
-$root  = getcwd();
-$root = str_replace('tests\library\classes', '', $root);
+$root  = dirname(__FILE__).'/';
+$root = str_replace('tests'.DIRECTORY_SEPARATOR.'library'.DIRECTORY_SEPARATOR.'classes', '', $root);
 define('ROOT', $root);
 set_include_path(
 	$root
@@ -61,33 +61,33 @@ class sQueryTest extends PHPUnit_Framework_TestCase
         // Remove the following lines when you implement this test.
 		$this->assertEquals(
 			array(),
-			$this->object->queryDb("SELECT * FROM test WHERE id = 'asdf'")
+			$this->object->queryDb("SELECT id, one_two_three FROM test WHERE id = 'asdf'")
 		);
 		$this->assertEquals(
 			array(
 				array
 				(
 					'id' => 1,
-					'value' => 'one'
+					'one_two_three' => 'one'
 				)
 			)
 			,
-			$this->object->queryDb("SELECT * FROM test WHERE id = 1")
+			$this->object->queryDb("SELECT id, one_two_three FROM test WHERE id = 1")
 		);
-		$this->object->queryDb("UPDATE test SET value = 'two' WHERE id = 1");
+		$this->object->queryDb("UPDATE test SET one_two_three = 'two' WHERE id = 1");
 		$this->assertEquals(
 			array(
 				array
 				(
 					'id' => 1,
-					'value' => 'two'
+					'one_two_three' => 'two'
 				)
 			)
 			,
-			$this->object->queryDb("SELECT * FROM test WHERE id = 1")
+			$this->object->queryDb("SELECT id, one_two_three FROM test WHERE id = 1")
 		);
 		//revert the change
-		$this->object->queryDb("UPDATE test SET value = 'one' WHERE id = 1");
+		$this->object->queryDb("UPDATE test SET one_two_three = 'one' WHERE id = 1");
 		return;
 		$this->assertEquals(
 			array(
@@ -103,35 +103,8 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 				)
 			)
 			,
-			$this->object->queryDb("SELECT * FROM test")
+			$this->object->queryDb("SELECT id, one_two_three FROM test")
 		);
-    }
-
-    /**
-     * 
-     */
-    public function testNewQuery()
-    {
-        $this->assertEquals(
-			true,
-			$this->object->newQuery()
-		);
-    }
-
-    /**
-     * 
-     */
-    public function testEscapeQuery()
-    {
-		try{
-			$this->object->escapeQuery("SELECT `test` FROM `test` WHERE `test` = ''test' ");
-			$this->fail('Should throw exception');
-		} catch(Exception $e) {
-			$this->assertEquals(
-				0,
-				strpos($e->getMessage(), 'Not implemented')
-			);
-		}
     }
 
     /**
@@ -159,44 +132,10 @@ class sQueryTest extends PHPUnit_Framework_TestCase
     /**
      * 
      */
-    public function testSetFrom()
-    {
-		try{
-			$this->object->newQuery();
-			$this->object->getSelect();
-			$this->fail('Should throw exception');
-		} catch(Exception $e) {
-			$this->assertEquals(
-				0,
-				strpos($e->getMessage(), 'You have to set a table before running this query')
-			);
-		}
-		
-		$this->object->newQuery();
-		$this->object->setFrom('test');
-		$select = $this->object->getSelect();
-		$select = str_replace("\n", '', $select);
-		$this->assertEquals(
-			"SELECT * FROM `test`",
-			$select
-		);
-		
-		$this->object->setFrom('not_test');
-		$select = $this->object->getSelect();
-		$select = str_replace("\n", '', $select);
-		$this->assertEquals(
-			"SELECT * FROM `not_test`",
-			$select
-		);
-    }
-
-    /**
-     * 
-     */
     public function testFrom()
     {
         $this->object->newQuery();
-		$this->object->setFrom('test');
+		$this->object->from('test');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -231,17 +170,56 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 			"SELECT * FROM `test`, `not_test`",
 			$select
 		);
+    }
 
+	public function testInto()
+    {
+        $this->object->newQuery();
+		$this->object->into('test');
+		$select = $this->object->getSelect();
+		$select = str_replace("\n", '', $select);
+		$this->assertEquals(
+			"SELECT * FROM `test`",
+			$select
+		);
+
+		$this->object->newQuery();
+		$this->object->into('test');
+		$select = $this->object->getSelect();
+		$select = str_replace("\n", '', $select);
+		$this->assertEquals(
+			"SELECT * FROM `test`",
+			$select
+		);
+
+		$this->object->newQuery();
+		$this->object->into('test', 'not_test');
+		$select = $this->object->getSelect();
+		$select = str_replace("\n", '', $select);
+		$this->assertEquals(
+			"SELECT * FROM `test`, `not_test`",
+			$select
+		);
+
+		$this->object->newQuery();
+		$this->object->into('test');
+		$this->object->into('not_test');
+		$select = $this->object->getSelect();
+		$select = str_replace("\n", '', $select);
+		$this->assertEquals(
+			"SELECT * FROM `test`, `not_test`",
+			$select
+		);
     }
 
     /**
      * 
      */
-    public function testAddGroupBy()
+    public function testGroupBy()
     {
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->addGroupBy('id');
+		$this->object->groupBy('id');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -251,15 +229,15 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->addGroupBy('id');
-		$this->object->addGroupBy('value');
+		$this->object->groupBy('id');
+		$this->object->groupBy('value');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
 			'SELECT * FROM `test` GROUP BY `id`, `value`',
 			$select
 		);
-		$this->object->addGroupBy('col3');
+		$this->object->groupBy('col3');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -269,7 +247,7 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 		
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->addGroupBy("value, id'");
+		$this->object->groupBy("value, id'");
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -281,11 +259,11 @@ class sQueryTest extends PHPUnit_Framework_TestCase
     /**
      * 
      */
-    public function testAddOrder()
+    public function testorderBy()
     {
         $this->object->newQuery();
 		$this->object->from('test');
-		$this->object->addOrder('id', 'ASC');
+		$this->object->orderBy('id', 'ASC');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -294,7 +272,7 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 		);
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->addOrder('id', 'DESC');
+		$this->object->orderBy('id', 'DESC');
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -304,13 +282,13 @@ class sQueryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetLimit().
+     * @todo Implement testlimit().
      */
-    public function testSetLimit()
+    public function testlimit()
     {
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->setLimit(1);
+		$this->object->limit(1);
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -319,10 +297,10 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 		);
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->setLimit(1);
-		$this->object->setLimit(2);
-		$this->object->setLimit(3);
-		$this->object->setLimit(4);
+		$this->object->limit(1);
+		$this->object->limit(2);
+		$this->object->limit(3);
+		$this->object->limit(4);
 		$select = $this->object->getSelect();
 		$select = trim(str_replace("\n", '', $select));
 		$this->assertEquals(
@@ -332,13 +310,13 @@ class sQueryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testSetOffset().
+     * @todo Implement testoffset().
      */
-    public function testSetOffset()
+    public function testoffset()
     {
         $this->object->newQuery();
 		$this->object->from('test');
-		$this->object->setOffset(1);
+		$this->object->offset(1);
 		$select = $this->object->getSelect();
 		$select = str_replace("\n", '', $select);
 		$this->assertEquals(
@@ -347,10 +325,10 @@ class sQueryTest extends PHPUnit_Framework_TestCase
 		);
 		$this->object->newQuery();
 		$this->object->from('test');
-		$this->object->setOffset(1);
-		$this->object->setOffset(2);
-		$this->object->setOffset(3);
-		$this->object->setOffset(4);
+		$this->object->offset(1);
+		$this->object->offset(2);
+		$this->object->offset(3);
+		$this->object->offset(4);
 		$select = $this->object->getSelect();
 		$select = trim(str_replace("\n", '', $select));
 		$this->assertEquals(
@@ -360,20 +338,75 @@ class sQueryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @todo Implement testAddColumn().
+     * 
      */
-    public function testAddColumn()
+    public function testColumn()
     {
-        // Remove the following lines when you implement this test.
-        $this->markTestIncomplete(
-          'This test has not been implemented yet.'
-        );
+		$select = $this->object->newQuery()
+				->table('test')
+				->column('value')
+				->getSelect();
+		$select = trim(str_replace("\n", '', $select));
+		$this->assertEquals(
+			"SELECT `value` FROM `test`",
+			$select
+		);
+
+		$select = $this->object->newQuery()
+				->table('test')
+				->column('value')
+				->column('one_two_three')
+				->getSelect();
+		$select = trim(str_replace("\n", '', $select));
+		$this->assertEquals(
+			"SELECT `value`, `one_two_three` FROM `test`",
+			$select
+		);
+
+		$select = $this->object->newQuery()
+				->table('test')
+				->column('value')
+				->column('one_two_three')
+				->column('CONCAT(value,one_two_three)')
+				->getSelect();
+		$select = trim(str_replace("\n", '', $select));
+		$this->assertEquals(
+			"SELECT `value`, `one_two_three`, CONCAT(value,one_two_three) FROM `test`",
+			$select
+		);
+		
+		$this->object->newQuery();
+		$select = $this->object->table('test')
+				->column('value')
+				->column('one_two_three')
+				->column('CONCAT(value,one_two_three)')
+				->column('IF(value, one_two_three, value) as if_test')
+				->getSelect();
+		$select = trim(str_replace("\n", '', $select));
+		$this->assertEquals(
+			"SELECT `value`, `one_two_three`, CONCAT(value,one_two_three), IF(value, one_two_three, value) as if_test FROM `test`",
+			$select
+		);
+
+		$this->object->newQuery();
+		$select = $this->object->table('test')
+				->column('value')
+				->column('one_two_three')
+				->column('CONCAT(value,one_two_three)')
+				->column('IF(value, one_two_three, value) as if_test')
+				->column('NULL')
+				->getSelect();
+		$select = trim(str_replace("\n", '', $select));
+		$this->assertEquals(
+			"SELECT `value`, `one_two_three`, CONCAT(value,one_two_three), IF(value, one_two_three, value) as if_test, NULL FROM `test`",
+			$select
+		);
     }
 
     /**
      * @todo Implement testAddColumns().
      */
-    public function testAddColumns()
+    public function testColumns()
     {
         // Remove the following lines when you implement this test.
         $this->markTestIncomplete(
