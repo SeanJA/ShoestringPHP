@@ -71,15 +71,25 @@ class Doc extends sModel {
      */
 	function update($id, $methodName, $comments, $example, $file){
 		$q = new sQuery();
-		$q->setInto('docs');
-		$q->addWhere('id', $id);
-		$q->addField('method_name', $methodName);
-		$q->addField('comments', $comments);
-		$q->addField('example', $example);
-		$q->addField('file', $file);
-		if(!$q->update()){
-			return $q->getError();
-		}
+        $result = $q->into('docs')
+            ->where('id', $id)
+            ->set('method_name', $methodName)
+            ->set('comments', $comments)
+            ->set('example', $example)
+            ->set('file', $file)
+            ->update();
+        if(!$result){
+            return $q->getError();
+        }
+//		$q->setInto('docs');
+//		$q->addWhere('id', $id);
+//		$q->addField('method_name', $methodName);
+//		$q->addField('comments', $comments);
+//		$q->addField('example', $example);
+//		$q->addField('file', $file);
+//		if(!$q->update()){
+//			return $q->getError();
+//		}
 	}
     /**
      * Delete a specific doc
@@ -88,8 +98,11 @@ class Doc extends sModel {
      */
 	function delete($id){
 		$q = new sQuery();
-		$q->setFrom('docs');
-		$q->addWhere('id', $id);
-		return $q->delete();
+        return $q->from('docs')
+            ->where('id', $id)
+            ->delete();
+//		$q->setFrom('docs');
+//		$q->addWhere('id', $id);
+//		return $q->delete();
 	}
 }
