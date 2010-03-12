@@ -1,7 +1,8 @@
 <?php
 
-class sUser extends sRoot{
-  /*Settings*/
+class sUser extends sRoot {
+
+	/*Settings*/
 	/**
 	 * The database table that holds all the information
 	 * var string
@@ -21,7 +22,8 @@ class sUser extends sRoot{
 	 * When user wants the system to remember him/her, how much time to keep the cookie? (seconds)
 	 * var int
 	 */
-	private $keepAlive = 2592000;//One month
+	private $keepAlive = 2592000;
+//One month
 	/**
 	 * The name of the cookie which we will use if user wants to be remembered by the system
 	 * var string
@@ -37,15 +39,14 @@ class sUser extends sRoot{
 	 * var string
 	 */
 	private $encryption;
-    /**
-     * The encryption types that we allow
-     * @var array
-     */
+	/**
+	 * The encryption types that we allow
+	 * @var array
+	 */
 	private $encryptionTypes = array('sha1', 'md5');
-	
-
 	private $userId;
-	private $userData=array();
+	private $userData = array();
+
 	/**
 	 * Class Constructor
 	 *
@@ -53,20 +54,20 @@ class sUser extends sRoot{
 	 * @param array $settings
 	 * @return void
 	 */
-	public function  __construct($id='') {
+	public function  __construct($id = '') {
 		parent::__construct();
 		$this->table = $this->config->users['table'];
 		$this->encryption = $this->config->users['encryption'];
 		$this->domain = $this->domain == '' ? $_SERVER['SERVER_NAME'] : $this->domain;
 		$this->fields = $this->config->users['fields'];
-		if($this->config->users['session_name']){
+		if ($this->config->users['session_name']) {
 			$this->session = $this->config->users['session_name'];
 		}
-		if( !isset( $_SESSION )) {
+		if (!isset($_SESSION)) {
 			session_start();
 		}
-		if ( !empty($_SESSION[$this->session]) && !$id ) {
-			$this->loadUser( $_SESSION[$this->session] );
+		if (!empty($_SESSION[$this->session]) && !$id) {
+			$this->loadUser($_SESSION[$this->session]);
 		} elseif(!empty($_SESSION[$this->session]) && $id) {
 			$this->loadUser($id);
 		}
@@ -87,23 +88,23 @@ class sUser extends sRoot{
 				->where($this->fields['password'], $password)
 				->limit(1)
 				->selectRow();
-		if(empty($user)){
+		if (empty($user)) {
 			$this->error('The username/password combination that you entered does not exist');
 			return false;
 		}
-		if ( $loadUser ) {
+		if ($loadUser) {
 			$this->userData = $user;
 			$this->userId = $this->userData[$this->fields['id']];
 			$_SESSION[$this->session] = $this->userId;
 		}
 		//if we are tracking the number of logins
-		if(isset($this->fields['logins']) && isset($this->userData[$this->fields['logins']])){
+		if (isset($this->fields['logins']) && isset($this->userData[$this->fields['logins']])) {
 			$q = new sQuery();
 			$q->from($this->table);
 			$this->userData[$this->fields['logins']] += 1;
 			$q->set($this->fields['logins'], $this->userData[$this->fields['logins']])
-				->where($this->fields['id'], $this->userData[$this->fields['id']])
-				->update();
+					->where($this->fields['id'], $this->userData[$this->fields['id']])
+					->update();
 		}
 		return true;
 	}
@@ -114,7 +115,7 @@ class sUser extends sRoot{
 	 * @return bool
 	 */
 	public function logout($redirectTo = '') {
-		if(isset($_SESSION[$this->session])){
+		if (isset($_SESSION[$this->session])) {
 			unset($_SESSION[$this->session]);
 		}
 		$this->userData = array();
@@ -132,7 +133,7 @@ class sUser extends sRoot{
 			$this->error('No user is loaded');
 		}
 		if (!isset($this->userData[$var])) {
-			$this->error('Unknown property <b>'.$var.'</b>');
+			$this->error('Unknown property <b>' . $var . '</b>');
 		}
 		return $this->userData[$var];
 	}
@@ -141,7 +142,7 @@ class sUser extends sRoot{
 	 * Get the user data that has been loaded already
 	 * @return array
 	 */
-	public function getUserData(){
+	public function getUserData() {
 		if (empty($this->userId)) {
 			$this->error('Cannot get user data. No user is loaded');
 		}
@@ -174,15 +175,15 @@ class sUser extends sRoot{
 		if (empty($this->userId)) {
 			$this->error('No user is loaded');
 		}
-		if ( $this->is_active()) {
+		if ($this->is_active()) {
 			$this->error('Allready active account');
 		}
 		$q = new sQuery();
 		$q->from($this->table)
 				->set($this->fields['active'], 1)
 				->where($this->fields['id'], $this->userId)
-				->setLimit(1);
-		if ($q->update() == 1) {
+				->limit(1);
+		if ($q->update()) {
 			$this->userData[$this->fields['active']] = true;
 			return true;
 		}
@@ -201,7 +202,7 @@ class sUser extends sRoot{
 		$data['password'] = $this->encrypt($data['password']);
 		$q = new sQuery();
 		$q->into($this->table);
-		foreach($data as $field=>$value) {
+		foreach ($data as $field=>$value) {
 			$q->set($field, $value);
 		}
 		return $q->insert();
@@ -214,14 +215,14 @@ class sUser extends sRoot{
 	public function randomPass() {
 		return base_convert(mt_rand(pow(39, 9), mt_getrandmax()), 10, 26);
 	}
-
-	public function getUserLevels(){
+	
+	public function getUserLevels() {
 		$q = new sQuery();
 		$q->from($this->table)
-			->addColumn($this->fields['level'])
-			->selectEnum();
+				->column($this->fields['level'])
+				->selectEnum();
 	}
-	
+
 	/**
 	 * A function that is used to load one user's data
 	 * @param string $userId
@@ -230,25 +231,23 @@ class sUser extends sRoot{
 	private function loadUser($userId) {
 		$q = new sQuery();
 		$this->userData = $q->from($this->table)
-				->addWhere($this->fields['id'], $userId)
-				->setLimit(1)
+				->where($this->fields['id'], $userId)
+				->limit(1)
 				->selectRow();
-		if(!$this->userData) {
+		if (!$this->userData) {
 			$this->error('Could not load user');
 		}
-		if(count($this->userData) != count($this->fields)){
-			$this->error('Your user config field count ('.count($this->fields).') does not match the database field count ('.count($this->userData).')');
+		if (count($this->userData) != count($this->fields)) {
+			$this->error('Your user config field count (' . count($this->fields) . ') does not match the database field count (' . count($this->userData) . ')');
 		}
 		$this->userId = $userId;
 		//if we already have a session var we are already logged in and
 		//are now loading another user to do something with
-		if(!isset($_SESSION[$this->session])){
+		if (!isset($_SESSION[$this->session])) {
 			$_SESSION[$this->session] = $this->userId;
 		}
 		return true;
 	}
-	
-	
 
 	/**
 	 * Encrypt something (a password maybe?)
@@ -256,18 +255,16 @@ class sUser extends sRoot{
 	 * @return str but it has been encrypted
 	 */
 	private function encrypt($str) {
-		if(in_array($this->encryption, $this->encryptionTypes)) {
-			if($this->encryption == 'md5') {
-				$str = md5($str.md5($str));
+		if (in_array($this->encryption, $this->encryptionTypes)) {
+			if ($this->encryption == 'md5') {
+				$str = md5($str . md5($str));
 			}
-			elseif($this->encryption == 'sha1'){
-				$str = sha1($str.sha1($str));
+			elseif($this->encryption == 'sha1') {
+				$str = sha1($str . sha1($str));
 			}
 		} else {
 			$str = "'$str'";
 		}
 		return $str;
 	}
-
-
 }

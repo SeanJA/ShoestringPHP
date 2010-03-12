@@ -1,11 +1,12 @@
 <?php
 
 class sMYSQLQuery extends sRoot {
-	private $dbLinkIdentifier = null;
-	private $resultResource = null;
-	private $lastInsertId = null;
-	private $affectedRows = null;
-	private $query;
+	protected $dbLinkIdentifier = null;
+	protected $resultResource = null;
+	protected $lastInsertId = null;
+	protected $affectedRows = null;
+	protected $reservedWords = array('NULL');
+	protected $query;
 
 	public function __construct() {
 		parent::__construct();
@@ -84,6 +85,7 @@ class sMYSQLQuery extends sRoot {
 					}
 					array_push($result,$tempResults);
 				}
+				$this->freeResult();
 				return($result);
 		}
 		return $this->resultResource;
@@ -99,16 +101,6 @@ class sMYSQLQuery extends sRoot {
 	}
 
 	/**
-	 * Attempt to escape the whole query
-	 * @param string $query
-	 * @return string
-	 */
-	public function escapeQuery($query) {
-		$this->error('Not implemented');
-		return $query;
-	}
-
-	/**
 	 *
 	 * @return int
 	 */
@@ -117,34 +109,25 @@ class sMYSQLQuery extends sRoot {
 	}
 
 	/**
-	 * Free the results
-	 */
-	private function freeResult() {
-		if($this->resultResource && !is_bool($this->resultResource)){
-			if(mysql_free_result($this->resultResource)){
-				$this->resultResource = null;
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Get the latest error
 	 * @return string
 	 */
-	private function getError() {
+	protected function getError() {
 		return mysql_error($this->dbLinkIdentifier);
 	}
-
+	
 	/**
-	 * Add a table to the query
-	 * @param string $table
+	 * Free the result resource
+	 * @return bool
 	 */
-	public function setFrom($table) {
-		return $this->query->setFrom('`'.$this->escape($table).'`');
+	protected function freeResult(){
+		if (!is_resource($this->resultResource)) {
+			$this->resultResource = null;
+			return true;
+		}
+		mysql_free_result($this->resultResource);
+		$this->resultResource = null;
+		return true;
 	}
 
 	/**
@@ -165,7 +148,7 @@ class sMYSQLQuery extends sRoot {
 	 * Set the group by statement
 	 * @param string $column
 	 */
-	public function addGroupBy($column) {
+	public function groupBy($column) {
 		return $this->query->addGroupBy('`'.$this->escape($column).'`');
 	}
 
@@ -173,7 +156,7 @@ class sMYSQLQuery extends sRoot {
 	 * set the order
 	 * @param string $column
 	 */
-	public function addOrder($column, $order='ASC') {
+	public function orderBy($column, $order='ASC') {
 		return $this->query->addOrder("`{$this->escape($column)}`", $this->escape($order));
 	}
 
@@ -181,7 +164,7 @@ class sMYSQLQuery extends sRoot {
 	 * Set the limit
 	 * @param int $int
 	 */
-	public function setLimit($int) {
+	public function limit($int) {
 		return $this->query->setLimit($this->escape($int));
 	}
 
@@ -189,7 +172,7 @@ class sMYSQLQuery extends sRoot {
 	 * Set the offset
 	 * @param int $int
 	 */
-	public function setOffset($int) {
+	public function offset($int) {
 		return $this->query->setOffset($this->escape($int));
 	}
 
@@ -197,8 +180,8 @@ class sMYSQLQuery extends sRoot {
 	 * Add one of the columns that you want to retrieve
 	 * @param string $column
 	 */
-	public function addColumn($column) {
-		if(strpos($column, ' ') === false){
+	public function column($column) {
+		if($this->noTicks($column)){
 			return $this->query->addColumn('`'.$this->escape($column).'`');
 		} else {
 			return $this->query->addColumn($this->escape($column));
@@ -208,13 +191,13 @@ class sMYSQLQuery extends sRoot {
 	/**
 	 * Add the columns that you want to retrieve
 	 */
-	public function addColumns() {
+	public function columns() {
 		$columns = func_get_args();
 		if(is_array($columns[0])){
 			$columns = $columns[0];
 		}
 		foreach($columns as $column) {
-			if(!$this->addColumn($column)){
+			if(!$this->column($column)){
 				$this->error('Could not add column '. $column);
 			}
 		}
@@ -227,7 +210,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param string $value
 	 * @param string $comparison
 	 */
-	public function addWhere($column, $value=null, $comparison=null) {
+	public function where($column, $value=null, $comparison=null) {
 
 		if(is_object($value)) {
 			return $this->query->addWhere($this->escape($column), $value,  $this->escape($comparison));
@@ -256,7 +239,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param string $field
 	 * @param string $value
 	 */
-	public function addField($field, $value) {
+	public function field($field, $value) {
 		return $this->query->addField("`{$this->escape($field)}`", "'{$this->escape($value)}'");
 	}
 
@@ -266,7 +249,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addJoin($table, $where) {
+	public function join($table, $where) {
 		if(strpos($table, ' ') === false){
 			return $this->query->addJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -280,7 +263,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addLeftJoin($table, $where) {
+	public function leftJoin($table, $where) {
 		if(strpos($table, ' ') === false){
 			return $this->query->addLeftJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -294,7 +277,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param str $where
 	 * @return bool
 	 */
-	public function addRightJoin($table, $where) {
+	public function rightJoin($table, $where) {
 		if(strpos($table, ' ') === false){
 			return $this->query->addRightJoin("`{$this->escape($table)}`", $this->escape($where));
 		} else {
@@ -309,7 +292,7 @@ class sMYSQLQuery extends sRoot {
 	public function selectAll() {
 		$query = $this->getSelect();
 		$result = $this->queryDb($query);
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		return $result;
 	}
 
@@ -321,7 +304,7 @@ class sMYSQLQuery extends sRoot {
 		$this->query->setLimit(1);
 		$query = $this->getSelect();
 		$result = $this->queryDb($query);
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		if($result && is_array($result)) {
 			$result = $result[0];
 		}
@@ -392,7 +375,7 @@ class sMYSQLQuery extends sRoot {
 	public function delete() {
 		$sql = $this->getDelete();
 		$this->queryDb($sql);
-		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
+		$this->affectedRows = $this->affectedRows();
 		return $this->affectedRows;
 	}
 
@@ -401,6 +384,17 @@ class sMYSQLQuery extends sRoot {
 	 * @return int
 	 */
 	public function affectedRows() {
+		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
+		/**
+		 * When using UPDATE, MySQL will not update columns where the new value is the
+		 * same as the old value. This creates the possibility that
+		 * mysql_affected_rows may not actually equal the number
+		 * of rows matched, only the number of rows that were literally affected by
+		 * the query.
+		 */
+		if($this->affectedRows === 0){
+			$this->affectedRows = true;
+		}
 		return $this->affectedRows;
 	}
 
@@ -475,17 +469,8 @@ class sMYSQLQuery extends sRoot {
 	public function update() {
 		$sql = $this->getUpdate();
 		$this->queryDb($sql);
-		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
-		/**
-		 * When using UPDATE, MySQL will not update columns where the new value is the
-		 * same as the old value. This creates the possibility that
-		 * mysql_affected_rows may not actually equal the number
-		 * of rows matched, only the number of rows that were literally affected by
-		 * the query.
-		 */
-		if($this->affectedRows === 0){
-			$this->affectedRows = true;
-		}
+		$this->affectedRows = $this->affectedRows();
+		
 		return $this->affectedRows;
 	}
 
@@ -508,7 +493,7 @@ class sMYSQLQuery extends sRoot {
 		$sql = $this->getCount();
 		$result = $this->queryDb($sql);
 		$result = (int)$result[0]['COUNT(*)'];
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		return $result;
 	}
 
@@ -517,7 +502,7 @@ class sMYSQLQuery extends sRoot {
 	 * @param $value
 	 * @return <type>
 	 */
-	private function escape($value) {
+	protected function escape($value) {
 		if(get_magic_quotes_gpc()) {
 			$value = stripslashes($value);
 		}
@@ -530,7 +515,7 @@ class sMYSQLQuery extends sRoot {
 	 * Get the string for the columns
 	 * @return <type>
 	 */
-	private function getColumnString() {
+	protected function getColumnString() {
 		$sql = '';
 		$columns = $this->query->getColumns();
 		if($columns) {
@@ -541,7 +526,7 @@ class sMYSQLQuery extends sRoot {
 		return rtrim($sql);
 	}
 
-	private function getJoinString() {
+	protected function getJoinString() {
 		$joins = $this->query->getJoins();
 		$sql = '';
 		if($joins) {
@@ -550,7 +535,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getTableString() {
+	protected function getTableString() {
 		$tables = $this->query->getTables();
 		$sql = '';
 		if($tables) {
@@ -559,7 +544,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getWhereString() {
+	protected function getWhereString() {
 		$whereArray = $this->query->getWheres();
 		$sql = '';
 		if ($whereArray['columns']) {
@@ -579,7 +564,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getFieldString() {
+	protected function getFieldString() {
 		$fields = $this->query->getFields();
 		$sql = ' (';
 		$sql.= implode(', ', $fields);
@@ -587,7 +572,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getValueString() {
+	protected function getValueString() {
 		$values = $this->query->getValues();
 		$sql = ' VALUES';
 		$sql.= ' (';
@@ -596,7 +581,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getFieldValueString() {
+	protected function getFieldValueString() {
 		$fields = $this->query->getFields();
 		$values = $this->query->getValues();
 		$sql = '';
@@ -609,7 +594,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getGroupByString() {
+	protected function getGroupByString() {
 		$groupBys = $this->query->getGroupBys();
 		$sql = '';
 		if ($groupBys) {
@@ -620,7 +605,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getOrderByString() {
+	protected function getOrderByString() {
 		$orderBys = $this->query->getOrderBys();
 		$sql = '';
 		if ($orderBys) {
@@ -631,7 +616,7 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getLimitString() {
+	protected function getLimitString() {
 		$limit = $this->query->getLimit();
 		$sql = '';
 		if ($limit) {
@@ -640,12 +625,16 @@ class sMYSQLQuery extends sRoot {
 		return $sql;
 	}
 
-	private function getOffsetString() {
+	protected function getOffsetString() {
 		$offset = $this->query->getOffset();
 		$sql = '';
 		if ($offset) {
 			$sql .= " OFFSET $offset\n";
 		}
 		return $sql;
+	}
+	protected function noTicks($string){
+		$return = (bool)(strpos($string, ' ') === false && strpos($string, '(') === false && !in_array($string, $this->reservedWords));
+		return $return;
 	}
 }
