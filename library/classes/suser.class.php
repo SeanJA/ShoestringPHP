@@ -82,11 +82,11 @@ class sUser extends sRoot{
 	public function login($username, $password, $loadUser = true) {
 		$password = $this->encrypt($password);
 		$q = new sQuery();
-		$q->from($this->table);
-		$q->addWhere($this->fields['username'], $username);
-		$q->addWhere($this->fields['password'], $password);
-		$q->setLimit(1);
-		$user = $q->selectRow();
+		$q->from($this->table)
+				->where($this->fields['username'], $username)
+				->where($this->fields['password'], $password)
+				->limit(1)
+				->selectRow();
 		if(empty($user)){
 			$this->error('The username/password combination that you entered does not exist');
 			return false;
@@ -101,9 +101,9 @@ class sUser extends sRoot{
 			$q = new sQuery();
 			$q->from($this->table);
 			$this->userData[$this->fields['logins']] += 1;
-			$q->addField($this->fields['logins'], $this->userData[$this->fields['logins']]);
-			$q->addWhere($this->fields['id'], $this->userData[$this->fields['id']]);
-			$q->update();
+			$q->set($this->fields['logins'], $this->userData[$this->fields['logins']])
+				->where($this->fields['id'], $this->userData[$this->fields['id']])
+				->update();
 		}
 		return true;
 	}
@@ -154,8 +154,8 @@ class sUser extends sRoot{
 	 */
 	public function getUserFields() {
 		$q = new sQuery();
-		$q->from('users');
-		return $q->tableFields();
+		return $q->from('users')
+				->tableFields();
 	}
 
 	/**
@@ -178,10 +178,10 @@ class sUser extends sRoot{
 			$this->error('Allready active account');
 		}
 		$q = new sQuery();
-		$q->from($this->table);
-		$q->addField($this->fields['active'], 1);
-		$q->addWhere($this->fields['id'], $this->userId);
-		$q->setLimit(1);
+		$q->from($this->table)
+				->set($this->fields['active'], 1)
+				->where($this->fields['id'], $this->userId)
+				->setLimit(1);
 		if ($q->update() == 1) {
 			$this->userData[$this->fields['active']] = true;
 			return true;
@@ -202,10 +202,9 @@ class sUser extends sRoot{
 		$q = new sQuery();
 		$q->into($this->table);
 		foreach($data as $field=>$value) {
-			$q->addField($field, $value);
+			$q->set($field, $value);
 		}
-		$q->insert();
-		return $q->lastInsertId();
+		return $q->insert();
 	}
 
 	/**
@@ -218,9 +217,9 @@ class sUser extends sRoot{
 
 	public function getUserLevels(){
 		$q = new sQuery();
-		$q->from($this->table);
-		$q->addColumn($this->fields['level']);
-		return $q->selectEnum();
+		$q->from($this->table)
+			->addColumn($this->fields['level'])
+			->selectEnum();
 	}
 	
 	/**
@@ -230,10 +229,10 @@ class sUser extends sRoot{
 	 */
 	private function loadUser($userId) {
 		$q = new sQuery();
-		$q->from($this->table);
-		$q->addWhere($this->fields['id'], $userId);
-		$q->setLimit(1);
-		$this->userData = $q->selectRow();
+		$this->userData = $q->from($this->table)
+				->addWhere($this->fields['id'], $userId)
+				->setLimit(1)
+				->selectRow();
 		if(!$this->userData) {
 			$this->error('Could not load user');
 		}
@@ -264,7 +263,6 @@ class sUser extends sRoot{
 			elseif($this->encryption == 'sha1'){
 				$str = sha1($str.sha1($str));
 			}
-		//$str = strtoupper($this->encryption) . "('$str')";
 		} else {
 			$str = "'$str'";
 		}

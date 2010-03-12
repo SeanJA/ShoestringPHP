@@ -5,7 +5,7 @@
 /**
  * The name of your database
  */
-$config['db']['name'] = 'shoestring_test';
+$config['db']['name'] = 'tinyurl';
 /**
  * The name of the database user
  */

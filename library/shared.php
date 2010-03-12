@@ -5,9 +5,9 @@
  * Check if environment is development and display errors
  */
 function setReporting() {
-	global $config;
+	$config = sConfig::getInstance();
 	ini_set('log_errors', 'On');
-	ini_set('error_log', ROOT.DS.'tmp'.DS.'logs'.DS.'error.log');
+	ini_set('error_log', ROOT . DS . 'tmp' . DS . 'logs' . DS . 'error.log');
 	if ($config->development_environment == true) {
 		error_reporting(E_ALL|E_STRICT);
 		ini_set('display_errors','On');
@@ -57,7 +57,8 @@ function unregisterGlobals() {
  * Main Call Function everything goes through here!
  */
 function callHook() {
-	global $url, $config;
+	$url = isset($_SERVER['PATH_INFO'])? $_SERVER['PATH_INFO']:null;
+	$config = sConfig::getInstance();
 
 	if($url == '/'){
 		$url = null;
@@ -106,8 +107,8 @@ function callHook() {
  * Autoload any classes that are required
  */
 function shoestringAutoload($className) {
-	global $config, $url;
-	$config->auto_load['helpers'][] = 'functions';
+	$url = isset($_SERVER['PATH_INFO'])? $_SERVER['PATH_INFO']:null;
+	$config = sConfig::getInstance();
 	//echo "auto_load $className";
 	//autoload helpers (load the users helpers, then load ours so functions can be overridden)
 	foreach($config->auto_load['helpers'] as $helper){

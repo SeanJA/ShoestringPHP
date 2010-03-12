@@ -6,7 +6,7 @@
  * @return str
  */
 function baseUrl($url=''){
-	global $config;
+	$config = sConfig::getInstance();
 	//if someone prefixes the url with a slash, remove it!
 	if(strpos($url,'/') === 0){
 		$url = substr($url, 1, strlen($url)-1);

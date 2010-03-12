@@ -7,6 +7,6 @@
 	<?php $f->label('password', 'Password'); ?>
 	<?php $f->password('password'); ?>
 	<br />
-	<?php $f->submit('Login', 'Login'); ?>
+	<?php $f->submit('Login'); ?>
 </div>
 <?php $f->close(); ?>

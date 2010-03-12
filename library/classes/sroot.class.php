@@ -3,7 +3,7 @@
 class sRoot{
 	/**
 	 * The configuration settings, it will be available to all of the classes
-	 * @var object config
+	 * @var sConfig
 	 */
 	protected $config;
 	/**
@@ -12,14 +12,8 @@ class sRoot{
      * 
 	 */
 	protected $displayErrors;
-    /**
-     * 
-     * @global configObject $config
-     */
 	public function __construct(){
-		//sigh...
-		global $config;
-		$this->config = &$config;
+		$this->config = sConfig::getInstance();
 		$this->displayErrors = $this->config->development_environment;
 	}
 	/**

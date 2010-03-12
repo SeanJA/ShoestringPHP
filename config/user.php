@@ -21,11 +21,11 @@ $config['users']['fields'] = array(
 	'username'       => 'username',
 	'password'       => 'password',
 	//(optional example fields)
-	'join_date'      => 'join_date',
-	'last_activity'	 => 'last_activity',
-	'level'	         => 'level',
-	'active'         => 'active',
-	'logins'         => 'logins',
+//	'join_date'      => 'join_date',
+//	'last_activity'	 => 'last_activity',
+//	'level'	         => 'level',
+//	'active'         => 'active',
+//	'logins'         => 'logins',
 );
 /**
  * Define the name for your users session

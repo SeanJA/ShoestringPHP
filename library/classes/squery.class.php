@@ -11,27 +11,20 @@ class sQuery extends sRoot{
 		$dbClass = 's'.$this->config->db['type'].'Query';
 		$this->db = new $dbClass();
 	}
-	/**
-	 * disconnects from the database
-	 */
-	public function __destruct(){
-		$this->disconnect();
-	}
+
 	/**
 	 * Disconnect from the database
-	 * @return sQuery
+	 * @return <type>
 	 */
 	public function disconnect() {
-		$this->db->disconnect();
-		return $this;
+		return $this->db->disconnect();
 	}
+
 	/**
 	 * Clean out the variables so we can start a new query
-	 * @return sQuery
 	 */
 	public function newQuery(){
-		$this->db->newQuery();
-		return $this;
+		return $this->db->newQuery();
 	}
     /**
      * Do a direct query on the database bypassing the query builder
@@ -42,134 +35,119 @@ class sQuery extends sRoot{
         return $this->db->queryDb($query);
     }
 	/**
+	 *
+	 * @param string $query
+	 * @return string
+	 */
+	public function escapeQuery($query){
+		return $this->db->escapeQuery($query);
+	}
+
+	/**
+	 *
+	 * @return int
+	 */
+	public function getNumRows() {
+		return $this->db->getNumRows();
+	}
+
+	/**
+	 * Add a table to the query
+	 * @param string $table
+	 */
+	public function setFrom($table){
+		return $this->db->setFrom($table);
+	}
+
+	/**
 	 * Add some tables to your query
 	 * @param string any number of parameters, each one is a table name
 	 */
 	public function from(){
-		$this->db->from(func_get_args());
-		return $this;
+		return $this->db->from(func_get_args());
 	}
+	
 	/**
 	 * Alias for from()
 	 * @see $this->from()
 	 * @param string any number of parameters, each one is a table name
 	 */
 	public function into(){
-		$this->db->from(func_get_args());
-		return $this;
+		return $this->db->from(func_get_args());
 	}
 	/**
-	 * Alias for from()
-	 * @see $this->from()
-	 * @param string any number of parameters, each one is a table name
+	 * Alias for setFrom($table)
+	 * @see $this->setFrom
+	 * 
 	 */
-	public function table(){
-		$this->db->from(func_get_args());
-		return $this;
+	public function setInto($table){
+		return $this->setFrom($table);
 	}
+
 	/**
 	 * Add a group by
 	 * @param string $column
-	 * @return sQuery
 	 */
-	public function groupBy($column){
-		$this->db->groupBy($column);
-		return $this;
+	public function addGroupBy($column){
+		return $this->db->addGroupBy($column);
 	}
+
 	/**
 	 * Add an order
 	 * @param string $column
-	 * @return sQuery
 	 */
-	public function orderBy($column, $direction){
-		$this->db->orderBy($column, $direction);
-		return $this;
+	public function addOrder($column, $direction){
+		return $this->db->addOrder($column, $direction);
 	}
+
 	/**
 	 * Set the limit
 	 * @param int $int
-	 * @return sQuery
 	 */
-	public function limit($int){
-		$this->db->limit($int);
-		return $this;
+	public function setLimit($int){
+		return $this->db->setLimit($int);
 	}
 
 	/**
 	 * Set the offset
 	 * @param int $int
 	 */
-	public function offset($int){
-		$this->db->offset($int);
-		return $this;
+	public function setOffset($int){
+		return $this->db->setOffset($int);
 	}
+
 	/**
 	 * Add one of the columns that you want to retrieve
 	 * @param string $column
-	 * @return sQuery
 	 */
-	public function column($column){
-		$this->db->column($column);
-		return $this;
+	public function addColumn($column){
+		return $this->db->addColumn($column);
 	}
+
 	/**
 	 * Add the columns that you want to retrieve
-	 * @return sQuery
 	 */
-	public function columns(){
-		$this->db->columns(func_get_args());
-		return $this;
+	public function addColumns(){
+		return $this->db->addColumns(func_get_args());
 	}
+
 	/**
 	 * Add a where
 	 * @param string $column
 	 * @param string $value
 	 * @param string $comparison
-	 * @return sQuery
 	 */
-	public function where($column, $value=null, $comparison=null){
-		$this->db->where($column, $value, $comparison);
-		return $this;
+	public function addWhere($column, $value=null, $comparison=null){
+		return $this->db->addWhere($column, $value, $comparison);
 	}
+
 	/**
 	 * Add a field and a value for that field for an insert statement
 	 * @param string $field
 	 * @param string $value
 	 */
-	public function set($field, $value){
-		$this->db->set($field, $value);
-		return $this;
-	}
-	/**
-	 * Add a join to the query
-	 * @param str $table
-	 * @param str $where
-	 * @return sQuery
-	 */
-	public function join($table, $where){
-		$this->db->join($table, $where);
-		return $this;
-	}
-	/**
-	 * Add a Left Join to the query
-	 * @param str $table
-	 * @param str $where
-	 * @return bool
-	 */
-	public function leftJoin($table, $where){
-		$this->db->leftJoin($table, $where);
-		return $this;
-	}
-
-	/**
-	 * Add a Right Join to the query
-	 * @param str $table
-	 * @param str $where
-	 * @return sQuery
-	 */
-	public function rightJoin($table, $where){
-		$this->db->rightJoin($table, $where);
-		return $this;
+	public function addField($field, $value){
+		return $this->db->addField($field, $value);
 	}
 
 	/**
@@ -195,13 +173,7 @@ class sQuery extends sRoot{
 	public function selectEnum(){
 		return $this->db->selectEnum();
 	}
-	/**
-	 *
-	 * @return int
-	 */
-	public function getNumRows() {
-		return $this->db->getNumRows();
-	}
+
 	/**
 	 * Get the select query
 	 * @return string
@@ -234,7 +206,7 @@ class sQuery extends sRoot{
 		return $this->db->getCount();
 	}
 
-
+	
 
 	/**
 	 * Escape a value
@@ -281,7 +253,7 @@ class sQuery extends sRoot{
 	public function lastInsertId(){
 		$this->db->lastInsertId();
 	}
-
+	
 	/**
 	 * Get the affected rows from the last query
 	 * @return <type>
@@ -295,6 +267,36 @@ class sQuery extends sRoot{
 	 */
 	public function count(){
 		return $this->db->count();
+	}
+
+	/**
+	 * Add a join to the query
+	 * @param str $table
+	 * @param str $where
+	 * @return bool
+	 */
+	public function addJoin($table, $where){
+		return $this->db->addJoin($table, $where);
+	}
+
+	/**
+	 * Add a Left Join to the query
+	 * @param str $table
+	 * @param str $where
+	 * @return bool
+	 */
+	public function addLeftJoin($table, $where){
+		return $this->db->addLeftJoin($table, $where);
+	}
+
+	/**
+	 * Add a Right Join to the query
+	 * @param str $table
+	 * @param str $where
+	 * @return bool
+	 */
+	public function addRightJoin($table, $where){
+		return $this->db->addRightJoin($table, $where);
 	}
 
 	/**

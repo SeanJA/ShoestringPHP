@@ -5,15 +5,8 @@
  * @param string $severity
  */
 function error404($errorText){
-	global $config;
+	$config = sConfig::getInstance();
 	die(header('Location: '.$config->base_url.$config->index_file.'errors/four-oh-four/'.$errorText));
-}
-/**
- *
- * @param <type> $url
- */
-function logError($error){
-	//log an error somewhere!
 }
 
 /**
@@ -25,9 +18,7 @@ function logError($error){
  * @return <type>
  */
 function sErrorHandler($errno, $errstr, $errfile, $errline){
-	global $config;
-
-
+//	$config = sConfig::getInstance();
 	//	$backtrace = debug_backtrace();
 	//    $backtrace = $backtrace[0];
 	//    echo '<div class="'.$severity.'">';
@@ -62,7 +53,7 @@ function sErrorHandler($errno, $errstr, $errfile, $errline){
 }
 
 function sExceptionHandler($exception) {
-	global $config;
+	$config = sConfig::getInstance();
 	$debug = debug_backtrace();
 	$debug = $debug[0]['args'][0];
 	echo 'Uncaught exception: ' , $exception->getMessage(), "\n";
