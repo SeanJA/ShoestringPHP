@@ -20,5 +20,3 @@ class Forms_Controller extends Controller {
 		$this->template->render('pre_filled', $this->data);
 	}
 }
-
-?>
