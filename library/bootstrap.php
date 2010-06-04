@@ -1,6 +1,6 @@
 <?php
 if(floatval(phpversion()) < 5){
-    throw new Exception('ShoestringPHP requires PHP Version 5.x');
+    die('ShoestringPHP requires PHP Version 5.x');
 }
 require_once (ROOT . DS . 'config' . DS . 'config.php');
 require_once (ROOT . DS . 'config' . DS . 'database.php');
