@@ -85,6 +85,7 @@ class sMYSQLQuery extends sRoot {
 					}
 					array_push($result,$tempResults);
 				}
+				$this->freeResult();
 				return($result);
 		}
 		return $this->resultResource;
@@ -108,21 +109,6 @@ class sMYSQLQuery extends sRoot {
 	}
 
 	/**
-	 * Free the results
-	 */
-	protected function freeResult() {
-		if($this->resultResource && !is_bool($this->resultResource)){
-			if(mysql_free_result($this->resultResource)){
-				$this->resultResource = null;
-				return true;
-			} else {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
 	 * Get the latest error
 	 * @return string
 	 */
@@ -130,6 +116,20 @@ class sMYSQLQuery extends sRoot {
 		return mysql_error($this->dbLinkIdentifier);
 	}
 	
+	/**
+	 * Free the result resource
+	 * @return bool
+	 */
+	protected function freeResult(){
+		if (!is_resource($this->resultResource)) {
+			$this->resultResource = null;
+			return true;
+		}
+		mysql_free_result($this->resultResource);
+		$this->resultResource = null;
+		return true;
+	}
+
 	/**
 	 * Add some tables to your query
 	 */
@@ -197,7 +197,7 @@ class sMYSQLQuery extends sRoot {
 			$columns = $columns[0];
 		}
 		foreach($columns as $column) {
-			if(!$this->addColumn($column)){
+			if(!$this->column($column)){
 				$this->error('Could not add column '. $column);
 			}
 		}
@@ -292,7 +292,7 @@ class sMYSQLQuery extends sRoot {
 	public function selectAll() {
 		$query = $this->getSelect();
 		$result = $this->queryDb($query);
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		return $result;
 	}
 
@@ -304,7 +304,7 @@ class sMYSQLQuery extends sRoot {
 		$this->query->setLimit(1);
 		$query = $this->getSelect();
 		$result = $this->queryDb($query);
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		if($result && is_array($result)) {
 			$result = $result[0];
 		}
@@ -375,7 +375,7 @@ class sMYSQLQuery extends sRoot {
 	public function delete() {
 		$sql = $this->getDelete();
 		$this->queryDb($sql);
-		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
+		$this->affectedRows = $this->affectedRows();
 		return $this->affectedRows;
 	}
 
@@ -384,6 +384,17 @@ class sMYSQLQuery extends sRoot {
 	 * @return int
 	 */
 	public function affectedRows() {
+		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
+		/**
+		 * When using UPDATE, MySQL will not update columns where the new value is the
+		 * same as the old value. This creates the possibility that
+		 * mysql_affected_rows may not actually equal the number
+		 * of rows matched, only the number of rows that were literally affected by
+		 * the query.
+		 */
+		if($this->affectedRows === 0){
+			$this->affectedRows = true;
+		}
 		return $this->affectedRows;
 	}
 
@@ -458,17 +469,8 @@ class sMYSQLQuery extends sRoot {
 	public function update() {
 		$sql = $this->getUpdate();
 		$this->queryDb($sql);
-		$this->affectedRows = mysql_affected_rows($this->dbLinkIdentifier);
-		/**
-		 * When using UPDATE, MySQL will not update columns where the new value is the
-		 * same as the old value. This creates the possibility that
-		 * mysql_affected_rows may not actually equal the number
-		 * of rows matched, only the number of rows that were literally affected by
-		 * the query.
-		 */
-		if($this->affectedRows === 0){
-			$this->affectedRows = true;
-		}
+		$this->affectedRows = $this->affectedRows();
+		
 		return $this->affectedRows;
 	}
 
@@ -491,7 +493,7 @@ class sMYSQLQuery extends sRoot {
 		$sql = $this->getCount();
 		$result = $this->queryDb($sql);
 		$result = (int)$result[0]['COUNT(*)'];
-		$this->freeResult($this->resultResource);
+		$this->freeResult();
 		return $result;
 	}
 

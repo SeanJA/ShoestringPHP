@@ -5,7 +5,7 @@
  * @param any $var
  */
 function pre_print_r($var){
-	global $config;
+	$config = sConfig::getInstance();
 	if($config->development_environment){
 	    echo "<pre>";
 	    print_r($var);
@@ -21,7 +21,7 @@ function pre_print_r($var){
  * @param any $var
  */
 function pre_var_dump($var){
-	global $config;
+	$config = sConfig::getInstance();
 	if($config->development_environment){
 	    echo "<pre>";
 	    var_dump($var);
@@ -34,7 +34,7 @@ function pre_var_dump($var){
  * Only works in development mode
  */
 function pre_debug_backtrace(){
-	global $config;
+	$config = sConfig::getInstance();
 	if($config->development_environment){
 		pre_print_r(debug_backtrace());
 	}
@@ -45,7 +45,7 @@ function pre_debug_backtrace(){
  * Only works in development mode
  */
 function pre_trace(){
-	global $config;
+	$config = sConfig::getInstance();
 	if($config->development_environment){
 		$debug = debug_backtrace();
 		$trace = '<div class="trace">';
@@ -93,7 +93,7 @@ function sAssertHandler($file, $line, $code){
  * @param string $code The code you are testing
  */
 function sAssert($code=null){
-	global $config;
+	$config = sConfig::getInstance();
 	if($config->deveopment_environment){
 		@assert_options(ASSERT_ACTIVE, 		true);
 		@assert_options(ASSERT_WARNING, 	false);

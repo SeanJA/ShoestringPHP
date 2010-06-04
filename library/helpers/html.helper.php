@@ -7,7 +7,7 @@
  * @param array $attributes
  */
 function href($url, $title, $attributes=array()) {
-	global $config;
+	$config = sConfig::getInstance();
 	$attributeString = '';
 	foreach($attributes as $attribute=>$value) {
 		$attributeString .= sEscape::html($attribute).'="'.sEscape::html($value).'"';
@@ -75,7 +75,7 @@ function metaTag($attributes) {
  * @return str
  */
 function charset() {
-	global $config;
+	$config = sConfig::getInstance();
 	$attributes = array(
 		'http-equiv'=>'Content-Type',
 		'content'=>'text/html; charset='.$config->char_encoding,
@@ -90,7 +90,7 @@ function charset() {
  * @return <type>
  */
 function css($file, $media=array('all')) {
-	global $config;
+	$config = sConfig::getInstance();
 	if(!is_array($media)) {
 		throw new Exception('media must be provided in array format');
 	}
@@ -109,7 +109,7 @@ function css($file, $media=array('all')) {
  * @return <type>
  */
 function js($file) {
-	global $config;
+	$config = sConfig::getInstance();
 	if(strpos($file, 'http://') === 0 || strpos($file, 'https://') === 0) {
 		echo '<script type="text/javascript" src="'.sEscape::html($file).'" ></script>';
 	} else {

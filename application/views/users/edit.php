@@ -11,7 +11,7 @@
 if($user->level == 'admin'){
 	$f->label('level', 'Level'); $f->selectBox('level', $levels, $editUser['level']); echo "<br />";
 } ?>
-<?php $f->submit('Save'); ?>
+<?php $f->submit('Save', 'Save'); ?>
 </div>
 <?php
 $f->close();

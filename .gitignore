@@ -1,0 +1,8 @@
+#ignore the files added by netbeans
+nbproject/**/*
+#ignore the contents of the temp folder
+tmp/**/*
+#ignore non default config files
+application/config/config.php
+application/config/database.php
+application/config/user.php

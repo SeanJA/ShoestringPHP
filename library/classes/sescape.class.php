@@ -9,7 +9,7 @@ class sEscape{
 	static function html($var){
 		//I hate doing this, but we need the char_encoding variable, and it
 		//will not work if it extends it (seeing as it is a static function)
-        global $config;
+        $config = sConfig::getInstance();
 		return htmlspecialchars($var, ENT_QUOTES, $config->char_encoding);
 	}
 	/**

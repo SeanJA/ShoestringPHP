@@ -1,1 +1,0 @@
-<?php die('no directory access');
