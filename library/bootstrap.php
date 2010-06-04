@@ -10,4 +10,6 @@ $configVars = $config;
 $config = sConfig::getInstance();
 $config->load($configVars);
 require_once (ROOT .  DS . 'library' . DS . 'errors.php');
+
+//away we go!
 require_once (ROOT . DS . 'library' . DS . 'shared.php');
