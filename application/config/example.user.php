@@ -11,6 +11,11 @@ $config['users']['table'] = 'users';
  */
 $config['users']['encryption'] = 'md5';
 /**
+ * How long the salt will be for passwords
+ * (make sure that your password field is long enough)
+ */
+$config['users']['salt_length'] = 8;
+/**
  * Define your users table
  * You should be editing the second column
  * the first column is the description used by the sUser class
