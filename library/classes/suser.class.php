@@ -83,7 +83,7 @@ class sUser extends sRoot {
 	public function login($username, $password, $loadUser = true) {
 		$password = $this->encrypt($password);
 		$q = new sQuery();
-		$q->from($this->table)
+		$user = $q->from($this->table)
 				->where($this->fields['username'], $username)
 				->where($this->fields['password'], $password)
 				->limit(1)
@@ -251,19 +251,18 @@ class sUser extends sRoot {
 
 	/**
 	 * Encrypt something (a password maybe?)
-	 * @param <type> $str
-	 * @return str but it has been encrypted
+	 * @param string $str
+	 * @return string but it has been encrypted
 	 */
 	private function encrypt($str) {
 		if (in_array($this->encryption, $this->encryptionTypes)) {
 			if ($this->encryption == 'md5') {
-				$str = md5($str . md5($str));
+				$str = md5($str);
 			}
 			elseif($this->encryption == 'sha1') {
 				$str = sha1($str . sha1($str));
 			}
-		} else {
-			$str = "'$str'";
+			$str = substr($str, 0, $this->config->users['salt_length']) . $str;
 		}
 		return $str;
 	}
