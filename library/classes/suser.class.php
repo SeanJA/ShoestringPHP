@@ -260,7 +260,7 @@ class sUser extends sRoot {
 				$str = md5($str);
 			}
 			elseif($this->encryption == 'sha1') {
-				$str = sha1($str . sha1($str));
+				$str = sha1($str);
 			}
 			$str = substr($str, 0, $this->config->users['salt_length']) . $str;
 		}
