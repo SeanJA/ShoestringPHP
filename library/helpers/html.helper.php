@@ -146,3 +146,45 @@ function h($var, $echo=true){
 		return sEscape::html($var);
 	}
 }
+
+/**
+ * Add an image to the page
+ * @param string $image
+ * @param string $alt
+ * @param array $attributes
+ */
+function image($image, $alt, $attributes=array()){
+	$config = sConfig::getInstance();
+	$attributes['alt']= $alt;
+	$attributeString = '';
+	foreach($attributes as $key=>$value){
+		$attributeString .= ' '.h($key, false) .'="'.h($value, false).'" ';
+	}
+	echo '<img '.$attributeString.' src="'.$config->base_url.'/public/images/'.$image.'" />';
+}
+
+/**
+ * Add a twitter link to the page
+ * @param string $image
+ * @param string $alt
+ * @param array $attributes
+ */
+function twitter_link($account, $attributes=array()){
+	href('http://twitter.com/'.$account, '@'.$account, $attributes);
+}
+
+/**
+ * Process the text and return it marked down
+ * @staticvar parser_class $parser
+ * @param string $text
+ * @return string
+ */
+function markdown($text) {
+	// Setup static parser variable.
+	static $parser;
+	if (!isset($parser)) {
+		$parser = new Markdown();
+	}
+	//Transform text using parser.
+	echo $parser->transform($text);
+}
