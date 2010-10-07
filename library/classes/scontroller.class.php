@@ -3,32 +3,36 @@
 class sController extends sRoot{
     /**
      * 
-     * @var <type>
+     * @var string
      */
 	protected $controller;
+	/**
+	 *
+	 * @var sTemplate
+	 */
 	protected $template;
-	private $validationErrors;
+	/**
+	 *
+	 * @var array
+	 */
+	private $validationErrors = array();
+	/**
+	 *
+	 * @var array
+	 */
 	private $validation = array();
+	/**
+	 *
+	 * @var array
+	 */
 	private $validationFields = array();
+	/**
+	 *
+	 * @param string $controller
+	 */
 	public function __construct($controller) {
 		parent::__construct();
 		$this->template = new sTemplate($controller);
-	}
-	/**
-	 * Load a different model than the one that is
-	 * included by default with the current controller
-	 * @param string $model
-	 * @param string $as
-	 */
-	public function loadModel($model, $as=''){
-		if(file_exists(ROOT . DS . 'application' . DS . 'models' . DS . strtolower($model). '.php')){
-			if($as == ''){
-				$as = $model;
-			}
-			$this->$as = new $model;
-		} else {
-			$this->error('Model does not exist');
-		}
 	}
 	/**
 	 * Load a helper

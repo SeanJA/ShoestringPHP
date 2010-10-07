@@ -20,7 +20,7 @@
  * @property string $users['encryption']
  * @property array $users['fields']
  * @property string $users['session_name']
- * @property string $users['salt_length']
+ * @property int $users['salt_length']
  */
 class sConfig {
 	/**

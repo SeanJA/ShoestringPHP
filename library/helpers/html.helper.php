@@ -10,12 +10,28 @@ function href($url, $title, $attributes=array()) {
 	$config = sConfig::getInstance();
 	$attributeString = '';
 	foreach($attributes as $attribute=>$value) {
-		$attributeString .= sEscape::html($attribute).'="'.sEscape::html($value).'"';
+		$attributeString .= h($attribute,false).'="'.h($value,false).'"';
 	}
 	if(strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0) {
 		$url = $config->base_url.$config->index_file.$url;
 	}
-	echo '<a '.$attributeString.' href="'.sEscape::html($url).'">'.sEscape::html($title).'</a>';
+	echo '<a '.$attributeString.' href="'.h($url,false).'">'.h($title,false).'</a>';
+}
+
+/**
+ * Generate a url for an html link (<a href="mailto:$email" $attributes>$email</a>)
+ * @param str $email
+ * @param str $title
+ * @param array $attributes
+ */
+function email_link($email, $attributes=array()) {
+	$config = sConfig::getInstance();
+	$attributes['href'] = 'mailto:'.$email;
+	$attributeString = '';
+	foreach($attributes as $attribute=>$value) {
+		$attributeString .= h($attribute,false).'="'.h($value,false).'"';
+	}
+	echo '<a '.$attributeString.'">'.h($email,false).'</a>';
 }
 
 /**
@@ -64,7 +80,7 @@ function metaTag($attributes) {
 	}
 	$attributeList = ' ';
 	foreach($attributes as $attribute=>$value) {
-		$attributeList .= sEscape::html($attribute) .'="'.sEscape::html($value).'" ';
+		$attributeList .= h($attribute, false) .'="'.h($value, false).'" ';
 	}
 	echo '<meta'.$attributeList.'/>';
 }
@@ -95,11 +111,11 @@ function css($file, $media=array('all')) {
 		throw new Exception('media must be provided in array format');
 	}
 	if(strpos($file, 'http://') === 0 || strpos($file, 'https://') === 0) {
-		$str = '<link rel="stylesheet" type="text/css" href="'.sEscape::html($file).'"';
+		$str = '<link rel="stylesheet" type="text/css" href="'.h($file, false).'"';
 	} else {
-		$str = '<link rel="stylesheet" type="text/css" href="'.sEscape::html($config->base_url.'public/css/'.$file).'"';
+		$str = '<link rel="stylesheet" type="text/css" href="'.h($config->base_url.'public/css/'.$file, false).'"';
 	}
-	$str .= ' media = "'.sEscape::html(implode(',', $media)).'" />';
+	$str .= ' media = "'.h(implode(',', $media), false).'" />';
 	echo $str;
 }
 
@@ -111,8 +127,22 @@ function css($file, $media=array('all')) {
 function js($file) {
 	$config = sConfig::getInstance();
 	if(strpos($file, 'http://') === 0 || strpos($file, 'https://') === 0) {
-		echo '<script type="text/javascript" src="'.sEscape::html($file).'" ></script>';
+		echo '<script type="text/javascript" src="'.h($file, false).'" ></script>';
 	} else {
-		echo '<script type="text/javascript" src="'.sEscape::html($config->base_url."public/js/$file").'" ></script>';
+		echo '<script type="text/javascript" src="'.h($config->base_url."public/js/$file", false).'" ></script>';
+	}
+}
+
+/**
+ * Short code to escape a variable for html
+ * @param string $var the string being escaped
+ * @param boolean $echo Whether or not to print to the screen (default true)
+ */
+function h($var, $echo=true){
+	$config = sConfig::getInstance();
+	if($echo){
+		echo sEscape::html($var);
+	} else {
+		return sEscape::html($var);
 	}
 }

@@ -12,6 +12,21 @@ class sQuery extends sRoot{
 		$this->db = new $dbClass();
 	}
 	/**
+	 * Create a table
+	 */
+	public function createTable(){
+		return $this->db->createTable($tableName);
+	}
+
+	/**
+	 * Check to see if a table exists
+	 * @param string $tableName
+	 * @return boolean
+	 */
+	public function tableExists($tableName){
+		return $this->db->tableExists($tableName);
+	}
+	/**
 	 * disconnects from the database
 	 */
 	public function __destruct(){

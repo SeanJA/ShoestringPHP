@@ -38,6 +38,28 @@ class sMYSQLQuery extends sRoot {
 		}
 		return true;
 	}
+	/**
+	 * Create a table
+	 */
+	public function createTable(){
+		return $this->queryDb('CREATE TABLE '. $this->getTableString());
+	}
+	/**
+	 * Check if a specific table exists
+	 * @param string $tableName
+	 */
+	public function tableExists($tableName){
+		$q = new sQuery();
+		$table = $q->from('information_schema.tables')
+				->column('table_name')
+				->where('table_schema', $this->config->db['name'])
+				->where(table_name, $tableName)
+				->selectRow();
+		if(!empty($table)){
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Disconnect from the database
@@ -45,7 +67,7 @@ class sMYSQLQuery extends sRoot {
 	 */
 	public function disconnect() {
 		if($this->dbLinkIdentifier){
-			if (mysql_close($this->dbLinkIdentifier) != 0) {
+			if (@mysql_close($this->dbLinkIdentifier) != 0) {
 				$this->dbLinkIdentifier = null;
 				return true;
 			}
@@ -336,10 +358,14 @@ class sMYSQLQuery extends sRoot {
 
 	/**
 	 * Get the select query
+	 * @param sQuery $queryObject
 	 * @return string
 	 */
 	public function getSelect($queryObject=null) {
 		if(!is_null($queryObject)) {
+			echo '<pre>';
+			print_r(debug_backtrace());
+			echo '</pre>';
 			$sql = "( \n /*begin subselect*/ \n".$queryObject->getSelect()."\n /*end subselect*/ \n)";
 		} else {
 			$sql= 'SELECT';

@@ -50,6 +50,9 @@ class sForm{
 	 * @param array $attributes
 	 */
 	function label($for, $text, array $attributes=array()){
+		if(empty($attributes['id'])){
+			$attributes['id'] = $for.'_label';
+		}
 		$form = '<label for="'.sEscape::html($for).'" ';
 		$form .= $this->getAttributes($attributes);
 		$form.= '>'.sEscape::html($text).' </label>';
@@ -211,12 +214,10 @@ class sForm{
 
 	/**
 	 * Create a button
-	 * @param string $name
 	 * @param string $content
 	 */
-	function button($name, $content, array $attributes=array()){
-		$this->name = sEscape::html($name);
-		$form = '<button name="'.$this->name.'" ';
+	function button($content, array $attributes=array()){
+		$form = '<button ';
 		$form .= $this->getAttributes($attributes);
 		$form.= '>'.sEscape::html($content).'</button>';
 		return $this->returnValue($form);
@@ -286,7 +287,10 @@ class sForm{
 	 */
 	private function getAttributes(array $attributes){
 		if(!array_key_exists('id', $attributes)){
-			$attributes['id'] = $this->nameToId();
+			if($id = $this->nameToId()){
+				$attributes['id'] = $id;
+			}
+			
 		}
 		$attributesString = ' ';
 		foreach($attributes as $attribute=>$value){
@@ -327,6 +331,7 @@ class sForm{
 		$id = str_replace('][', '_', $id);
 		$id = str_replace('[', '', $id);
 		$id = str_replace(']', '', $id);
+		$this->name = null;
 		return sEscape::html($id);
 	}
 }
