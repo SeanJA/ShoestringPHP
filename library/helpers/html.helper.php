@@ -2,36 +2,41 @@
 
 /**
  * Generate a url (<a href="$url" $attributes>$title</a>)
- * @param str $url
- * @param str $title
- * @param array $attributes
+ * @param str $url the url being linked to
+ * @param str $title will appear between the <a>[$title]</a>
+ * @param array $attributes other attributes that will be added to the element
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function href($url, $title, $attributes=array()) {
+function href($url, $title, $attributes=array(), $echo=true) {
 	$config = sConfig::getInstance();
 	$attributeString = '';
 	foreach($attributes as $attribute=>$value) {
-		$attributeString .= h($attribute,false).'="'.h($value,false).'"';
+		if(strtolower($attribute) != 'href'){
+			$attributeString .= h($attribute,false).'="'.h($value,false).'" ';
+		}
 	}
-	if(strpos($url, 'http://') !== 0 && strpos($url, 'https://') !== 0) {
+	$linkTypes = array('https?:\/\/','mailto:','git:\/\/','git@','ftps?:\/\/');
+	if(!preg_match('/^('.implode('|', $linkTypes).')/', $url)) {
 		$url = $config->base_url.$config->index_file.$url;
 	}
-	echo '<a '.$attributeString.' href="'.h($url,false).'">'.h($title,false).'</a>';
+	$return = '<a '.$attributeString.'href="'.h($url,false).'">'.h($title,false).'</a>';
+	if($echo){
+		echo $return;
+	} else {
+		return $return;
+	}
 }
 
 /**
  * Generate a url for an html link (<a href="mailto:$email" $attributes>$email</a>)
- * @param str $email
- * @param str $title
- * @param array $attributes
+ * @param str $email the email being linked to
+ * @param array $attributes other attributes that will be added to the element
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function email_link($email, $attributes=array()) {
-	$config = sConfig::getInstance();
-	$attributes['href'] = 'mailto:'.$email;
-	$attributeString = '';
-	foreach($attributes as $attribute=>$value) {
-		$attributeString .= h($attribute,false).'="'.h($value,false).'"';
-	}
-	echo '<a '.$attributeString.'">'.h($email,false).'</a>';
+function email_link($email, $attributes=array(), $echo=true) {
+	return href('mailto:'.$email, $email, $attributes, $echo);
 }
 
 /**
@@ -42,9 +47,10 @@ function email_link($email, $attributes=array()) {
  * html4_trans
  * html5
  * @param str $type
- * @return str
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function docType($type = 'html_trans') {
+function docType($type = 'html4_trans', $echo=true) {
 	$docType = '';
 	switch ($type) {
 		case 'xhtml1_strict':
@@ -66,70 +72,88 @@ function docType($type = 'html_trans') {
 		case 'html5':
 			$docType = '<!DOCTYPE html>';
 			break;
+		default:
+			throw new Exception('Unknown Doctype "'.$type.'".');
 	}
-	echo $docType;
+	if($echo){
+		echo $docType;
+	} else {
+		return $docType;
+	}
 }
 
 /**
  * Generate a meta tag
  * @param array $attributes
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function metaTag($attributes) {
-	if(!is_array($attributes)) {
-		throw new Exception('Attributes must be provided in array format');
-	}
+function metaTag(array $attributes, $echo=true) {
 	$attributeList = ' ';
 	foreach($attributes as $attribute=>$value) {
 		$attributeList .= h($attribute, false) .'="'.h($value, false).'" ';
 	}
-	echo '<meta'.$attributeList.'/>';
+	$meta = '<meta'.$attributeList.'/>';
+	if($echo){
+		echo $meta;
+	} else {
+		return $meta;
+	}
 }
 
 /**
  * Generate the charset meta tag
- * @param str $set
- * @return str
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function charset() {
+function charset($echo=true) {
 	$config = sConfig::getInstance();
 	$attributes = array(
 		'http-equiv'=>'Content-Type',
 		'content'=>'text/html; charset='.$config->char_encoding,
 	);
-	metaTag($attributes);
+	return metaTag($attributes, $echo);
 }
 
 /**
  * Generate the css include string
- * @param str $file
- * @param str
- * @return <type>
+ * @param str $file The css file that you are linking to
+ * @param array $media The media types that you want to use this css file for
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
-function css($file, $media=array('all')) {
-	$config = sConfig::getInstance();
-	if(!is_array($media)) {
-		throw new Exception('media must be provided in array format');
-	}
-	if(strpos($file, 'http://') === 0 || strpos($file, 'https://') === 0) {
+function css($file, array $media=array('all'), $echo) {
+	if(preg_match('/^(https?:\/\//)', $file)) {
 		$str = '<link rel="stylesheet" type="text/css" href="'.h($file, false).'"';
 	} else {
+		$config = sConfig::getInstance();
 		$str = '<link rel="stylesheet" type="text/css" href="'.h($config->base_url.'public/css/'.$file, false).'"';
 	}
 	$str .= ' media = "'.h(implode(',', $media), false).'" />';
-	echo $str;
+	if($echo){
+		echo $str;
+	} else {
+		return $str;
+	}
 }
 
 /**
  * Generate the js include string
- * @param <type> $file
- * @return <type>
+ * @param string $file the js file being linked to
+ * @param boolean $echo Whether or not to echo out the string at the end, default true
+ * @return if the string is not echoed, return the string
  */
 function js($file) {
-	$config = sConfig::getInstance();
-	if(strpos($file, 'http://') === 0 || strpos($file, 'https://') === 0) {
-		echo '<script type="text/javascript" src="'.h($file, false).'" ></script>';
+	if(preg_match('/^(https?:\/\//)', $file)) {
+		$str = '<script type="text/javascript" src="'.h($file, false).'" ></script>';
 	} else {
-		echo '<script type="text/javascript" src="'.h($config->base_url."public/js/$file", false).'" ></script>';
+		$config = sConfig::getInstance();
+		$str = '<script type="text/javascript" src="'.h($config->base_url."public/js/$file", false).'" ></script>';
+	}
+	if($echo){
+		echo $str;
+	} else {
+		return $str;
 	}
 }
 
@@ -169,8 +193,8 @@ function image($image, $alt, $attributes=array()){
  * @param string $alt
  * @param array $attributes
  */
-function twitter_link($account, $attributes=array()){
-	href('http://twitter.com/'.$account, '@'.$account, $attributes);
+function twitter_link($account, $attributes=array(), $echo = true){
+	return href('http://twitter.com/'.$account, '@'.$account, $attributes);
 }
 
 /**

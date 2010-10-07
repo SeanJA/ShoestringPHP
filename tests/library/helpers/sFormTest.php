@@ -1,6 +1,5 @@
 <?php
-ini_set("include_path", "../library/helpers".PATH_SEPARATOR."../../../library/helpers".PATH_SEPARATOR.ini_get("include_path"));
-require_once 'PHPUnit/Framework.php';
+require '../includes.php';
 
 require_once 'form.helper.php';
 
