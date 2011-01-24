@@ -50,7 +50,9 @@ class objectmodel extends sModel{
 	 * @return mixed
 	 */
 	public function  __get($name) {
-		return $this->data[$name];
+		$getter = '_get'.$name;
+		$value = (method_exists($this, $getter))? $this->$getter() : $this->data[$name];
+		return $value;
 	}
 	/**
 	 * Set a value in the data array
